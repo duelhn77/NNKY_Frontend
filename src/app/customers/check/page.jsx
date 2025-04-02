@@ -1,5 +1,5 @@
 export const dynamic = 'force-dynamic'
-import OneCustomerInfoCard from "@/components/one_customer_info_card.jsx";
+import OneCustomerInfoCard from "../../../components/one_customer_info_card.jsx";
 
 
 async function fetchCustomer(id) {
