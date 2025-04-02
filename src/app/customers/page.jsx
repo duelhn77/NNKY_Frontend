@@ -1,5 +1,5 @@
 "use client";
-import OneCustomerInfoCard from "@/app/components/one_customer_info_card.jsx";
+import OneCustomerInfoCard from "../components/one_customer_info_card.jsx";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import fetchCustomers from "./fetchCustomers";
