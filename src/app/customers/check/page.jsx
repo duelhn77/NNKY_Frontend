@@ -1,6 +1,5 @@
 export const dynamic = 'force-dynamic'
-import OneCustomerInfoCard from "../../components/one_customer_info_card.jsx";
-
+import OneCustomerInfoCard from "../../../components/one_customer_info_card.jsx"; // ← パスも1つ深く変更
 
 async function fetchCustomer(id) {
   const res = await fetch(
@@ -12,8 +11,8 @@ async function fetchCustomer(id) {
   return res.json();
 }
 
-export default async function ReadPage({ query }) {
-  const { id } = query;
+export default async function ReadPage({ params }) {
+  const { id } = params;
   const customerInfo = await fetchCustomer(id);
 
   return (
