@@ -1,5 +1,6 @@
 "use client";
-import OneCustomerInfoCard from "@/app/components/one_customer_info_card.jsx";
+import OneCustomerInfoCard from "@/components/one_customer_info_card.jsx";
+
 import fetchCustomer from "./fetchCustomer";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";

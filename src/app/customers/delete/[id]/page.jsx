@@ -1,5 +1,5 @@
 "use client";
-import OneCustomerInfoCard from "@/app/components/one_customer_info_card.jsx";
+import OneCustomerInfoCard from "@/components/one_customer_info_card.jsx";
 import deleteCustomer from "./deleteCustomer";
 import fetchCustomer from "./fetchCustomer";
 import { useRouter } from "next/navigation";
