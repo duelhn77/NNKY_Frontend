@@ -71,7 +71,7 @@ function App() {
       {/* Hero Section */}
       <div className="relative h-auto">
         <img
-          src="top_men.png"
+          src="/top_men.png"
           alt="トップ画像"
           className="w-full max-w-[300px] h-auto object-contain mx-auto"
         />
