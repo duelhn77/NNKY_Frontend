@@ -47,7 +47,7 @@ export default function QuickDiagnose() {
 
     formData.append("prompt", basePrompt);
 
-    const res = await fetch(`${BACKEND_URL}/diagnose`, {
+    const res = await fetch(`${BACKEND_URL}/recommend`, {
       method: "POST",
       body: formData,
     });
