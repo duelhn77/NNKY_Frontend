@@ -9,6 +9,8 @@ export default function QuickDiagnose() {
   const [skincare, setSkincare] = useState<string>("");
   const [haircare, setHaircare] = useState<string>("");
 
+  const BACKEND_URL = process.env.NEXT_PUBLIC_API_ENDPOINT;
+
   const handleCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -27,7 +29,7 @@ export default function QuickDiagnose() {
       "この写真をもとに、肌の状態、髪の毛の状態を診断してください"
     );
 
-    const res = await fetch("http://127.0.0.1:8000/diagnose", {
+    const res = await fetch(`${BACKEND_URL}/diagnose`, {
       method: "POST",
       body: formData,
     });
@@ -45,7 +47,7 @@ export default function QuickDiagnose() {
 
     formData.append("prompt", basePrompt);
 
-    const res = await fetch("http://127.0.0.1:8000/recommend", {
+    const res = await fetch(`${BACKEND_URL}/diagnose`, {
       method: "POST",
       body: formData,
     });
