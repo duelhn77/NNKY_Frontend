@@ -144,8 +144,11 @@ function App() {
               </div>
             </div>
 
-            {/* クイック診断 */}
-            <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+              {/* クイック診断 */}
+            <Link
+              href="/quickdiagnose"
+              className="block bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:bg-gray-50 transition"
+            >
               <div className="flex items-center gap-4">
                 <div className="bg-purple-50 p-3 rounded-full">
                   <Camera className="w-6 h-6 text-purple-600" />
@@ -160,7 +163,8 @@ function App() {
                 </div>
                 <ChevronRight className="w-5 h-5 text-gray-400" />
               </div>
-            </div>
+            </Link>
+
           </div>
 
           {/* Features */}
