@@ -7,7 +7,7 @@ import { UserForm } from '@/components/UserForm';
 import { QuestionnaireForm } from '@/components/QuestionnaireForm';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
-const STEPS = ['コース選択', '問診回答', '日時選択', 'お客様情報入力', '予約内容確認'];
+const STEPS = ['コース選択', '問診回答', '日時選択', 'ログイン/会員登録', '予約内容確認'];
 
 const MOCK_TIME_SLOTS = [
   { time: '10:00-10:30', available: true },
@@ -21,7 +21,8 @@ const MOCK_TIME_SLOTS = [
 ];
 
 function App() {
-  const [currentStep, setCurrentStep] = useState(2); // Start at questionnaire step
+  const [currentStep, setCurrentStep] = useState(2);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [bookingDetails, setBookingDetails] = useState({
     consultationType: 'メイクアップ',
     questionnaire: null,
@@ -71,6 +72,15 @@ function App() {
     if (currentStep === 4 && !validateUserInfo()) {
       return;
     }
+    
+    // Authentication flow check after date selection
+    if (currentStep === 3) {
+      if (isAuthenticated) {
+        setCurrentStep(5); // Skip to confirmation if authenticated
+        return;
+      }
+    }
+    
     setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
   };
 
@@ -87,9 +97,20 @@ function App() {
   };
 
   const handleConfirm = () => {
-    // Here you would typically submit the booking to your backend
     console.log('Booking confirmed:', bookingDetails);
     alert('予約が完了しました。');
+  };
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    setIsAuthenticated(true);
+    setCurrentStep(5); // Proceed to confirmation step
+  };
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+    setIsAuthenticated(true);
+    setCurrentStep(5); // Proceed to confirmation step
   };
 
   return (
@@ -153,13 +174,98 @@ function App() {
           )}
 
           {currentStep === 4 && (
-            <UserForm
-              userInfo={bookingDetails.userInfo}
-              onUserInfoChange={(userInfo) =>
-                setBookingDetails((prev) => ({ ...prev, userInfo }))
-              }
-              errors={errors}
-            />
+            <div className="space-y-6">
+              <h2 className="text-xl font-semibold mb-6">ログインまたは会員登録</h2>
+              <p className="text-gray-600">このまま予約を確定するには、ログインまたは新規登録が必要です。</p>
+              
+              {/* ログインフォーム */}
+              <div className="bg-white border border-gray-200 rounded-lg p-4">
+                <h3 className="text-lg font-bold mb-4">ログイン</h3>
+                <form className="space-y-4" onSubmit={handleLogin}>
+                  <input
+                    type="email"
+                    placeholder="メールアドレス"
+                    className="w-full border px-3 py-2 rounded"
+                    required
+                  />
+                  <input
+                    type="password"
+                    placeholder="パスワード"
+                    className="w-full border px-3 py-2 rounded"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                  >
+                    ログイン
+                  </button>
+                </form>
+              </div>
+
+              {/* 会員登録フォーム */}
+              <div className="bg-white border border-gray-200 rounded-lg p-4">
+                <h3 className="text-lg font-bold mb-4">会員登録</h3>
+                <form className="space-y-3" onSubmit={handleRegister}>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="text"
+                      placeholder="姓（漢字）"
+                      className="border px-2 py-1 rounded"
+                      required
+                    />
+                    <input
+                      type="text"
+                      placeholder="名（漢字）"
+                      className="border px-2 py-1 rounded"
+                      required
+                    />
+                    <input
+                      type="text"
+                      placeholder="セイ（カタカナ）"
+                      className="border px-2 py-1 rounded"
+                      required
+                    />
+                    <input
+                      type="text"
+                      placeholder="メイ（カタカナ）"
+                      className="border px-2 py-1 rounded"
+                      required
+                    />
+                  </div>
+                  <input
+                    type="email"
+                    placeholder="メールアドレス"
+                    className="w-full border px-3 py-2 rounded"
+                    required
+                  />
+                  <input
+                    type="tel"
+                    placeholder="電話番号"
+                    className="w-full border px-3 py-2 rounded"
+                    required
+                  />
+                  <input
+                    type="date"
+                    placeholder="生年月日"
+                    className="w-full border px-3 py-2 rounded"
+                    required
+                  />
+                  <input
+                    type="password"
+                    placeholder="パスワード"
+                    className="w-full border px-3 py-2 rounded"
+                    required
+                  />
+                  <button
+                    type="submit"
+                    className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
+                  >
+                    会員登録
+                  </button>
+                </form>
+              </div>
+            </div>
           )}
 
           {currentStep === 5 && (
