@@ -226,6 +226,7 @@ function App() {
               href="/quickdiagnose"
               className="block bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:bg-gray-50 transition"
             >
+
               <div className="flex items-center gap-4">
                 <div className="bg-purple-50 p-3 rounded-full">
                   <Camera className="w-6 h-6 text-purple-600" />
