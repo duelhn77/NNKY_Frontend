@@ -2,6 +2,16 @@
 
 import { useRef, useState, useCallback } from "react";
 import Webcam from "react-webcam";
+import {
+  Video,
+  MessageSquare,
+  ChevronRight,
+  Menu,
+  LogIn,
+  Camera,
+  X,
+} from "lucide-react";
+import Link from "next/link";
 
 export default function QuickDiagnose() {
   const [image, setImage] = useState<File | null>(null);
@@ -243,8 +253,46 @@ ${result}
               ))}
             </div>
           )}
+
+{(skincare || haircare) && (
+      <div className="flex-1">
+      <div className="container mx-auto px-4 py-8">
+        <h2 className="text-2xl font-bold mb-6 text-gray-800">カウンセリング予約</h2>
+        <div className="grid gap-4">
+          <Link href="/consultation" className="block bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:bg-gray-50 transition">
+            <div className="flex items-center gap-4">
+              <div className="bg-blue-50 p-3 rounded-full">
+                <Video className="w-6 h-6 text-blue-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-800">ビデオ相談</h3>
+                <p className="text-gray-600 text-sm mt-1">専門カウンセラーとビデオチャットで相談</p>
+              </div>
+              <ChevronRight className="w-5 h-5 text-gray-400" />
+            </div>
+          </Link>
+
+          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+            <div className="flex items-center gap-4">
+              <div className="bg-green-50 p-3 rounded-full">
+                <MessageSquare className="w-6 h-6 text-green-600" />
+              </div>
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-gray-800">チャット相談</h3>
+                <p className="text-gray-600 text-sm mt-1">テキストチャットでじっくり相談</p>
+              </div>
+              <ChevronRight className="w-5 h-5 text-gray-400" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+)}
+
+
         </div>
       )}
     </div>
   );
 }
+
