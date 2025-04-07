@@ -31,17 +31,36 @@ export default function QuickDiagnose() {
     if (webcamRef.current) {
       const screenshot = webcamRef.current.getScreenshot();
       if (screenshot) {
-        fetch(screenshot)
-          .then(res => res.blob())
-          .then(blob => {
-            const file = new File([blob], "captured.jpg", { type: "image/jpeg" });
-            setImage(file);
-            setPreview(URL.createObjectURL(blob));
-            setCapturing(false);
-          });
+        const img = new Image();
+        img.src = screenshot;
+  
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+  
+          const ctx = canvas.getContext("2d");
+          if (ctx) {
+            // 左右反転
+            ctx.translate(img.width, 0);
+            ctx.scale(-1, 1);
+            ctx.drawImage(img, 0, 0);
+  
+            // blob へ変換
+            canvas.toBlob((blob) => {
+              if (blob) {
+                const file = new File([blob], "captured.jpg", { type: "image/jpeg" });
+                setImage(file);
+                setPreview(URL.createObjectURL(blob));
+                setCapturing(false);
+              }
+            }, "image/jpeg");
+          }
+        };
       }
     }
   }, []);
+  
 
   const handleSubmit = async () => {
     if (!image) return;
@@ -143,6 +162,7 @@ ${result}
       screenshotFormat="image/jpeg"
       className="absolute top-0 left-0 w-full h-full object-cover rounded"
       videoConstraints={{ facingMode: "user" }}
+      mirrored={true}
     />
 
     {/* ✅ ぼかし＋楕円マスク */}
@@ -254,25 +274,25 @@ ${result}
             </div>
           )}
 
-{(skincare || haircare) && (
-      <div className="flex-1">
-      <div className="container mx-auto px-4 py-8">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">カウンセリング予約</h2>
-        <div className="grid gap-4">
-          <Link href="/consultation" className="block bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:bg-gray-50 transition">
-            <div className="flex items-center gap-4">
-              <div className="bg-blue-50 p-3 rounded-full">
-                <Video className="w-6 h-6 text-blue-600" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-800">ビデオ相談</h3>
-                <p className="text-gray-600 text-sm mt-1">専門カウンセラーとビデオチャットで相談</p>
-              </div>
-              <ChevronRight className="w-5 h-5 text-gray-400" />
-            </div>
-          </Link>
+          {(skincare || haircare) && (
+           <div className="flex-1">
+            <div className="container mx-auto px-4 py-8">
+              <h2 className="text-2xl font-bold mb-6 text-gray-800">カウンセリング予約</h2>
+              <div className="grid gap-4">
+                <Link href="/consultation" className="block bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:bg-gray-50 transition">
+                  <div className="flex items-center gap-4">
+                    <div className="bg-blue-50 p-3 rounded-full">
+                      <Video className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div className="flex-1">
+                     <h3 className="text-lg font-semibold text-gray-800">ビデオ相談</h3>
+                     <p className="text-gray-600 text-sm mt-1">専門カウンセラーとビデオチャットで相談</p>
+                    </div>
+                      <ChevronRight className="w-5 h-5 text-gray-400" />
+                  </div>
+                </Link>
 
-          <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
+           <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
             <div className="flex items-center gap-4">
               <div className="bg-green-50 p-3 rounded-full">
                 <MessageSquare className="w-6 h-6 text-green-600" />
