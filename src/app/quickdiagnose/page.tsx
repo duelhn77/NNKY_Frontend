@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef, useState, useCallback } from "react";
+import Webcam from "react-webcam";
 
 export default function QuickDiagnose() {
   const [image, setImage] = useState<File | null>(null);
@@ -9,31 +10,43 @@ export default function QuickDiagnose() {
   const [skincare, setSkincare] = useState<string>("");
   const [haircare, setHaircare] = useState<string>("");
 
-  const [loading, setLoading] = useState<boolean>(false);
-  const [recommending, setRecommending] = useState<"skincare" | "haircare" | null>(null); // ✅ 保持
+  const [loading, setLoading] = useState(false);
+  const [recommending, setRecommending] = useState<"skincare" | "haircare" | null>(null);
+  const [capturing, setCapturing] = useState(false);
+  const webcamRef = useRef<Webcam>(null);
   const resultRef = useRef<HTMLDivElement>(null);
-
   const BACKEND_URL = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
-  const handleCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setImage(file);
-      setPreview(URL.createObjectURL(file));
+  const capturePhoto = useCallback(() => {
+    if (webcamRef.current) {
+      const screenshot = webcamRef.current.getScreenshot();
+      if (screenshot) {
+        fetch(screenshot)
+          .then(res => res.blob())
+          .then(blob => {
+            const file = new File([blob], "captured.jpg", { type: "image/jpeg" });
+            setImage(file);
+            setPreview(URL.createObjectURL(blob));
+            setCapturing(false);
+          });
+      }
     }
-  };
+  }, []);
 
   const handleSubmit = async () => {
     if (!image) return;
-
     setLoading(true);
+
+    const prompt = `以下の顔写真をもとに、以下の2点について簡潔に診断してください。
+
+① 肌の状態（例：キメの細かさ、テカリ、乾燥、毛穴、シミ・くすみの有無など）
+② 髪の毛の状態（例：ハリ・コシ、ツヤ、毛量、乾燥・脂っぽさなど）
+肌と髪の毛それぞれについて、2〜3行程度の短く要点をまとめたアドバイス形式で回答してください。
+回答は「肌の状態」「髪の毛の状態」という見出しをつけてください。`;
 
     const formData = new FormData();
     formData.append("file", image);
-    formData.append(
-      "prompt",
-      "この写真をもとに、肌の状態、髪の毛の状態を診断してください"
-    );
+    formData.append("prompt", prompt);
 
     const res = await fetch(`${BACKEND_URL}/diagnose`, {
       method: "POST",
@@ -43,47 +56,52 @@ export default function QuickDiagnose() {
     const data = await res.json();
     setResult(data.result);
     setLoading(false);
-
-    // スクロール
-    setTimeout(() => {
-      resultRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
+    setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
   };
 
   const fetchRecommendation = async (type: "skincare" | "haircare") => {
     setRecommending(type);
-  
+
+    const skincarePrompt = `以下の診断結果に基づき、40代男性向けにマンダム製品の中からおすすめのスキンケアを提案してください。
+
+【診断結果（肌）】
+${result}
+
+このような肌の状態を考慮し、次の条件を満たすスキンケア製品を1〜2点提案してください：
+- 洗顔や化粧水など日常的に取り入れやすいアイテム
+- 脂性肌＋乾燥肌のバランスケアが可能な処方
+- 忙しい男性でも手軽に使えるシンプルケア`;
+
+    const haircarePrompt = `以下の診断結果に基づき、40代男性向けにマンダム製品の中からおすすめのヘアケア製品を提案してください。
+
+【診断結果（髪）】
+${result}
+
+この髪の状態に合ったマンダム製品を、以下の条件を考慮して1〜2点提案してください：
+- 髪のハリ・コシを保ちつつ、乾燥対策も可能な処方
+- 年齢による頭皮ケアもサポートできる`;
+
     const formData = new FormData();
-    const basePrompt =
-      type === "skincare"
-        ? "40代の男性向けにおすすめのスキンケアをマンダム製品の中から提案してください。"
-        : "40代の男性向けにおすすめのヘアケアをマンダム製品の中から提案してください。";
-  
-    formData.append("prompt", basePrompt);
-  
+    formData.append("prompt", type === "skincare" ? skincarePrompt : haircarePrompt);
+
     const res = await fetch(`${BACKEND_URL}/recommend`, {
       method: "POST",
       body: formData,
     });
-  
+
     const data = await res.json();
     if (type === "skincare") setSkincare(data.result);
     else setHaircare(data.result);
-  
+
     setRecommending(null);
-  
-    // ✅ スクロール処理追加
-    setTimeout(() => {
-      resultRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, 100);
+    setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
   };
-  
 
   return (
     <div className="p-4 max-w-md mx-auto relative">
       <h1 className="text-2xl font-bold mb-4 text-center">クイック診断</h1>
 
-      {/* ✅ 共通ローディングモーダル */}
+      {/* ✅ モーダルスピナー */}
       {(loading || recommending !== null) && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded shadow text-center">
@@ -97,21 +115,71 @@ export default function QuickDiagnose() {
         </div>
       )}
 
-      {/* 顔写真撮影 */}
-      <label className="block mb-4">
-        <span className="inline-block px-4 py-2 bg-blue-500 text-white rounded text-center w-full cursor-pointer">
+      {/* ✅ カメラで撮影 */}
+      {!preview && !capturing && (
+        <button
+          onClick={() => setCapturing(true)}
+          className="w-full px-4 py-2 bg-blue-500 text-white rounded mb-4"
+        >
           撮影して肌・髪をチェック!
-        </span>
-        <input
-          type="file"
-          accept="image/*"
-          capture="user"
-          onChange={handleCapture}
-          className="hidden"
-        />
-      </label>
+        </button>
+      )}
 
-      {/* プレビュー */}
+{capturing && (
+  <div className="relative w-full aspect-[3/4] mb-4">
+    {/* ✅ カメラ映像 */}
+    <Webcam
+      ref={webcamRef}
+      screenshotFormat="image/jpeg"
+      className="absolute top-0 left-0 w-full h-full object-cover rounded"
+      videoConstraints={{ facingMode: "user" }}
+    />
+
+    {/* ✅ ぼかし＋楕円マスク */}
+    <div
+      className="absolute inset-0 z-10 pointer-events-none"
+      style={{
+        backdropFilter: "blur(4px)",
+        WebkitBackdropFilter: "blur(4px)",
+        maskImage: "radial-gradient(ellipse 40% 55% at center, transparent 0%, black 100%)",
+        WebkitMaskImage: "radial-gradient(ellipse 40% 55% at center, transparent 0%, black 100%)",
+        backgroundColor: "rgba(0,0,0,0.5)",
+      }}
+    />
+
+    {/* ✅ 楕円の白い枠線 */}
+    <div
+      className="absolute top-1/2 left-1/2 z-20 border-2 border-yellow-300"
+      style={{
+        width: "240px",
+        height: "320px",
+        borderRadius: "50% / 40%",
+        transform: "translate(-50%, -50%)",
+      }}
+    />
+
+    {/* ✅ 十字線（中央） */}
+    <div className="absolute top-1/2 left-1/2 z-30 w-[240px] h-[320px] pointer-events-none transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center">
+      {/* 縦線 */}
+      <div className="absolute top-0 bottom-0 left-1/2 w-px bg-white opacity-60" />
+      {/* 横線 */}
+      <div className="absolute left-0 right-0 top-1/2 h-px bg-white opacity-60" />
+    </div>
+
+    {/* ✅ 撮影ボタン */}
+    <button
+      onClick={capturePhoto}
+      className="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-white text-blue-500 font-bold py-2 px-6 rounded shadow z-40"
+    >
+      撮影
+    </button>
+  </div>
+)}
+
+
+
+
+      {/* ✅ プレビュー画像・診断ボタン */}
       {preview && (
         <div className="flex flex-col items-center space-y-2">
           <img src={preview} alt="preview" className="rounded w-full max-w-xs" />
@@ -119,36 +187,28 @@ export default function QuickDiagnose() {
             onClick={handleSubmit}
             disabled={loading}
             className={`w-full md:w-48 px-4 py-2 rounded text-white ${
-              loading ? "bg-gray-400 cursor-not-allowed" : "bg-blue-500"
+              loading ? "bg-gray-400" : "bg-blue-500"
             }`}
           >
-            {loading ? "診断中..." : "この写真で診断"}
+            この写真で診断
           </button>
         </div>
       )}
 
-      {/* 結果 */}
+      {/* ✅ 診断結果・おすすめ */}
       {result && (
-        <div
-          ref={resultRef}
-          className="mt-6 p-4 border rounded bg-gray-100 space-y-4"
-        >
+        <div ref={resultRef} className="mt-6 p-4 border rounded bg-gray-100 space-y-4">
           <div>
             <h2 className="text-lg font-semibold mb-1">診断結果</h2>
-            {result.split(/\n|(?=\d\.\s)/).map((paragraph, index) => (
-              <p key={index} className="mb-2 text-sm leading-relaxed">
-                {paragraph.trim()}
-              </p>
+            {result.split(/\n|(?=\d\.\s)/).map((p, i) => (
+              <p key={i} className="mb-2 text-sm leading-relaxed">{p.trim()}</p>
             ))}
           </div>
 
-          {/* おすすめボタン群 */}
           <div className="flex flex-col items-center space-y-2">
             <button
               className={`w-full md:w-48 px-4 py-2 rounded text-white ${
-                recommending === "skincare"
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-500"
+                recommending === "skincare" ? "bg-gray-400" : "bg-blue-500"
               }`}
               onClick={() => fetchRecommendation("skincare")}
               disabled={recommending === "skincare"}
@@ -157,9 +217,7 @@ export default function QuickDiagnose() {
             </button>
             <button
               className={`w-full md:w-48 px-4 py-2 rounded text-white ${
-                recommending === "haircare"
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-500"
+                recommending === "haircare" ? "bg-gray-400" : "bg-blue-500"
               }`}
               onClick={() => fetchRecommendation("haircare")}
               disabled={recommending === "haircare"}
@@ -168,30 +226,20 @@ export default function QuickDiagnose() {
             </button>
           </div>
 
-          {/* スキンケア結果 */}
           {skincare && (
             <div>
-              <h3 className="font-semibold text-sm mb-1">
-                マンダム製品おすすめスキンケア
-              </h3>
-              {skincare.split(/\n|(?=\d\.\s)/).map((paragraph, index) => (
-                <p key={index} className="mb-2 text-sm leading-relaxed">
-                  {paragraph.trim()}
-                </p>
+              <h3 className="font-semibold text-sm mb-1">スキンケアの提案</h3>
+              {skincare.split(/\n|(?=\d\.\s)/).map((p, i) => (
+                <p key={i} className="mb-2 text-sm">{p.trim()}</p>
               ))}
             </div>
           )}
 
-          {/* ヘアケア結果 */}
           {haircare && (
             <div>
-              <h3 className="font-semibold text-sm mb-1">
-                マンダム製品おすすめヘアケア
-              </h3>
-              {haircare.split(/\n|(?=\d\.\s)/).map((paragraph, index) => (
-                <p key={index} className="mb-2 text-sm leading-relaxed">
-                  {paragraph.trim()}
-                </p>
+              <h3 className="font-semibold text-sm mb-1">ヘアケアの提案</h3>
+              {haircare.split(/\n|(?=\d\.\s)/).map((p, i) => (
+                <p key={i} className="mb-2 text-sm">{p.trim()}</p>
               ))}
             </div>
           )}
