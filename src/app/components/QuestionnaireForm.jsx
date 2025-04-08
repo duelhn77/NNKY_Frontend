@@ -5,7 +5,7 @@ const SKIN_TYPES = ['乾燥', '脂性', '混合', '敏感', '普通'];
 const SKIN_CONCERNS = ['シミ', 'シワ', '毛穴', 'くすみ', 'ニキビ', 'たるみ', '赤み'];
 const SKINCARE_ITEMS = ['化粧水', '美容液', '乳液', 'クリーム', '洗顔料', '日焼け止め', 'パック・マスク'];
 
-export const QuestionnaireForm = ({ onSubmit }) => {
+export const QuestionnaireForm = ({ onSubmit, onBack }) => {
   const [formData, setFormData] = useState({
     skinType: '',
     skinConcerns: [],
@@ -180,14 +180,22 @@ export const QuestionnaireForm = ({ onSubmit }) => {
         />
       </div>
 
-      <div className="pt-6">
-        <button
-          type="submit"
-          className="w-full md:w-auto px-8 py-4 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
-        >
-          送信してカウンセリングへ進む
-        </button>
-      </div>
-    </form>
-  );
-};
+      <div className="pt-6 space-y-4">
+  <button
+    type="submit"
+    className="w-full md:w-auto px-8 py-4 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
+  >
+    送信してカウンセリングへ進む
+  </button>
+
+  <div>
+    <button
+      type="button"
+      onClick={onBack}
+      className="flex items-center px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100"
+    >
+      ← 戻る
+    </button>
+  </div>
+</div>
+</form>
