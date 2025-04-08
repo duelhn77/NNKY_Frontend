@@ -163,8 +163,7 @@ function App() {
 
       <div className="relative h-auto">
 
-        <img src="top_men.png" alt="トップ画像" className="w-full max-w-[300px] h-auto object-contain mx-auto" />
-=======
+
         <img
           src="/top_men.png"
           alt="トップ画像"
