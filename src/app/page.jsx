@@ -162,7 +162,15 @@ function App() {
       )}
 
       <div className="relative h-auto">
+
         <img src="top_men.png" alt="トップ画像" className="w-full max-w-[300px] h-auto object-contain mx-auto" />
+=======
+        <img
+          src="/top_men.png"
+          alt="トップ画像"
+          className="w-full max-w-[300px] h-auto object-contain mx-auto"
+        />
+
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
           <div className="container mx-auto px-4 h-full flex items-end pb-8">
             <h2 className="text-white text-3xl md:text-4xl font-bold">
