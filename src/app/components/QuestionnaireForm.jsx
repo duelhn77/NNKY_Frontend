@@ -185,7 +185,7 @@ export const QuestionnaireForm = ({ onSubmit, onBack }) => {
     type="submit"
     className="w-full md:w-auto px-8 py-4 bg-gray-800 text-white rounded-lg hover:bg-gray-700 transition-colors"
   >
-    送信してカウンセリングへ進む
+    送信してカウンセリング予約へ進む
   </button>
 
   <div>

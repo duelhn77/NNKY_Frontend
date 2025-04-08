@@ -136,7 +136,7 @@ export const QuestionnaireForm_total = ({ onSubmit, onBack }) => {
           type="submit"
           className="flex items-center px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700"
         >
-          送信してカウンセリングへ進む
+          送信してカウンセリング予約へ進む
           <ArrowRight size={16} className="ml-2" />
         </button>
       </div>
