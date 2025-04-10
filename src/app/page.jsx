@@ -58,12 +58,28 @@ function App() {
     }
   };
   
-
-  const handleRegister = (e) => {
+  //  ログイン画面につきAPIと連携　（4/10 なりさん）
+  const handleRegister = async (e) => {
     e.preventDefault();
-    setIsAuthenticated(true);
-    setIsAuthModalOpen(false);
+  
+    try {
+      const response = await axios.post("http://localhost:8000/register", {
+        name: registerForm.firstName + registerForm.lastName,
+        name_kana: registerForm.firstNameKana + registerForm.lastNameKana,
+        email: registerForm.email,
+        password: registerForm.password,  // ✅ハッシュしない
+        birth_date: registerForm.birthDate, // yyyy-mm-dd 形式
+      });
+  
+      alert("会員登録に成功しました！");
+      setIsAuthenticated(true);
+      setIsAuthModalOpen(false);
+    } catch (error) {
+      console.error("登録エラー:", error.response?.data || error);
+      alert("会員登録に失敗しました。");
+    }
   };
+  
 
   
   return (
