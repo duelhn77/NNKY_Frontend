@@ -28,6 +28,7 @@ function App() {
   const [currentStep, setCurrentStep] = useState(2);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const BACKEND_URL = process.env.NEXT_PUBLIC_API_ENDPOINT;
   const [registerForm, setRegisterForm] = useState({
     firstName: '',
     lastName: '',
@@ -123,7 +124,7 @@ function App() {
     e.preventDefault();
   
     try {
-      const response = await axios.post("http://localhost:8000/register", {
+      const response = await axios.post(`${BACKEND_URL}/register`, {
         name: registerForm.firstName + registerForm.lastName,
         name_kana: registerForm.firstNameKana + registerForm.lastNameKana,
         email: registerForm.email,
