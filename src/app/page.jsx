@@ -21,6 +21,7 @@ function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState("login");
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const BACKEND_URL = process.env.NEXT_PUBLIC_API_ENDPOINT;
 
   //LINEモーダルの状態管理
   const [isLineModalOpen, setIsLineModalOpen] = useState(false);
@@ -45,7 +46,7 @@ function App() {
     console.log("📩 入力されたパスワード:", loginForm.password);
   
     try {
-      const response = await axios.post('http://localhost:8000/login', {
+      const response = await axios.post(`${BACKEND_URL}/login`, {
         email: loginForm.email,
         password: loginForm.password
       });
