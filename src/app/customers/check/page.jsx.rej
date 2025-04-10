@@ -1,0 +1,7 @@
+diff a/src/app/customers/check/page.jsx b/src/app/customers/check/page.jsx	(rejected hunks)
+@@ -1,5 +1,4 @@
+ export const dynamic = 'force-dynamic'
+-import OneCustomerInfoCard from "../../../components/one_customer_info_card.jsx"; // ← パスも1つ深く変更
+ import OneCustomerInfoCard from "../../components/one_customer_info_card.jsx"; // ← パスも1つ深く変更
+ 
+ async function fetchCustomer(id) {
