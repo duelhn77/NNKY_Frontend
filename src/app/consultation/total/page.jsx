@@ -6,6 +6,7 @@ import { TimeSlots } from '@/components/TimeSlots';
 import { UserForm } from '@/components/UserForm';
 import { QuestionnaireForm_total } from '@/components/QuestionnaireForm_total';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
+import axios from "axios";
 
 const STEPS = ['コース選択', '問診回答', '日時選択', 'ログイン/会員登録', '予約内容確認'];
 
@@ -23,6 +24,17 @@ const MOCK_TIME_SLOTS = [
 function App() {
   const [currentStep, setCurrentStep] = useState(2);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [registerForm, setRegisterForm] = useState({
+      firstName: '',
+      lastName: '',
+      firstNameKana: '',
+      lastNameKana: '',
+      email: '',
+      phone: '',
+      password: '',
+      birthDate: '',
+    });
   const [bookingDetails, setBookingDetails] = useState({
     consultationType: 'トータルカウンセリング',
     questionnaire: null,
@@ -107,10 +119,25 @@ function App() {
     setCurrentStep(5); // Proceed to confirmation step
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
-    setIsAuthenticated(true);
-    setCurrentStep(5); // Proceed to confirmation step
+  
+    try {
+      const response = await axios.post("http://localhost:8000/register", {
+        name: registerForm.firstName + registerForm.lastName,
+        name_kana: registerForm.firstNameKana + registerForm.lastNameKana,
+        email: registerForm.email,
+        password: registerForm.password,  // ✅ハッシュしない
+        birth_date: registerForm.birthDate, // yyyy-mm-dd 形式
+      });
+  
+      alert("会員登録に成功しました！");
+      setIsAuthenticated(true);
+      setIsAuthModalOpen(false);
+    } catch (error) {
+      console.error("登録エラー:", error.response?.data || error);
+      alert("会員登録に失敗しました。");
+    }
   };
 
   return (
@@ -217,24 +244,40 @@ function App() {
                       placeholder="姓（漢字）"
                       className="border px-2 py-1 rounded"
                       required
+                      value={registerForm.lastName}
+                      onChange={(e) =>
+                        setRegisterForm({ ...registerForm, lastName: e.target.value })
+                      }
                     />
                     <input
                       type="text"
                       placeholder="名（漢字）"
                       className="border px-2 py-1 rounded"
                       required
+                      value={registerForm.firstName}
+                      onChange={(e) =>
+                        setRegisterForm({ ...registerForm, firstName: e.target.value })
+                      }
                     />
                     <input
                       type="text"
                       placeholder="セイ（カタカナ）"
                       className="border px-2 py-1 rounded"
                       required
+                      value={registerForm.lastNameKana}
+                      onChange={(e) =>
+                        setRegisterForm({ ...registerForm, lastNameKana: e.target.value })
+                      }
                     />
                     <input
                       type="text"
                       placeholder="メイ（カタカナ）"
                       className="border px-2 py-1 rounded"
                       required
+                      value={registerForm.firstNameKana}
+                      onChange={(e) =>
+                        setRegisterForm({ ...registerForm, firstNameKana: e.target.value })
+                      }
                     />
                   </div>
                   <input
@@ -242,24 +285,40 @@ function App() {
                     placeholder="メールアドレス"
                     className="w-full border px-3 py-2 rounded"
                     required
+                    value={registerForm.email}
+                    onChange={(e) =>
+                      setRegisterForm({ ...registerForm, email: e.target.value })
+                    }
                   />
                   <input
                     type="tel"
                     placeholder="電話番号"
                     className="w-full border px-3 py-2 rounded"
                     required
+                    value={registerForm.phone}
+                    onChange={(e) =>
+                      setRegisterForm({ ...registerForm, phone: e.target.value })
+                    }
                   />
                   <input
                     type="date"
                     placeholder="生年月日"
                     className="w-full border px-3 py-2 rounded"
                     required
+                    value={registerForm.birthDate}
+                    onChange={(e) =>
+                      setRegisterForm({ ...registerForm, birthDate: e.target.value })
+                    }
                   />
                   <input
                     type="password"
                     placeholder="パスワード"
                     className="w-full border px-3 py-2 rounded"
                     required
+                    value={registerForm.password}
+                    onChange={(e) =>
+                      setRegisterForm({ ...registerForm, password: e.target.value })
+                    }
                   />
                   <button
                     type="submit"
