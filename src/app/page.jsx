@@ -14,6 +14,7 @@ import {
 
 import { AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import axios from 'axios';
 
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -36,11 +37,27 @@ function App() {
     password: "",
   });
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-    setIsAuthenticated(true);
-    setIsAuthModalOpen(false);
+  // ログイン画面につきAPIと連携　（4/10 なりさん）
+  const handleLogin = async (e) => {
+    e.preventDefault(); // フォーム送信防止
+  
+    // 🔍 パスワードが平文かチェック
+    console.log("📩 入力されたパスワード:", loginForm.password);
+  
+    try {
+      const response = await axios.post('http://localhost:8000/login', {
+        email: loginForm.email,
+        password: loginForm.password
+      });
+  
+      setIsAuthenticated(true);
+      alert('ログイン成功！');
+    } catch (error) {
+      console.log("❌ エラー内容:", error);
+      alert('ログインに失敗しました。');
+    }
   };
+  
 
   const handleRegister = (e) => {
     e.preventDefault();
@@ -48,6 +65,7 @@ function App() {
     setIsAuthModalOpen(false);
   };
 
+  
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col relative">
       <header className="bg-white shadow-sm sticky top-0 z-50">
@@ -76,6 +94,24 @@ function App() {
           </div>
         </div>
       </header>
+
+      {/* // JSXでフォームを描画 */}
+      <form onSubmit={handleLogin}>
+      <input
+        type="email"
+        value={loginForm.email}
+        onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+        required
+      />
+      <input
+        type="password"
+        value={loginForm.password}
+        onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+        required
+      />
+      <button type="submit">ログイン</button>
+    </form>
+
 
 {isMenuOpen && (
   <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-start">
