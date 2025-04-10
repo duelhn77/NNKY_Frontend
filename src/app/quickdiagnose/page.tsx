@@ -68,15 +68,27 @@ const handleSubmit = async (type: 'full' | 'hair' | 'tzone' | 'uzone' | 'eyes'):
 
   let prompt = ''; // prompt を空文字列で初期化しておく
   if (type === 'full') {
-    prompt = '以下の顔写真をもとに、『肌の状態』と『髪の毛の状態』を診断してください。';
+    prompt = `以下の顔写真をもとに、以下の2点について簡潔に診断してください。
+             ① 肌の状態（例：キメの細かさ、テカリ、乾燥、毛穴、シミ・くすみの有無など）
+             ② 髪の毛の状態（例：ハリ・コシ、ツヤ、毛量、乾燥・脂っぽさなど）
+             肌と髪の毛それぞれについて、2〜3行程度の短く要点をまとめたアドバイス形式で回答してください。
+             回答は「肌の状態」「髪の毛の状態」という見出しをつけてください。`;
   } else if (type === 'hair') {
-    prompt = '以下の顔写真をもとに、『髪の毛の状態』のみを診断してください。';
+    prompt = `以下の顔写真をもとに、『髪の毛の状態』のみを診断してください。
+              髪の毛について、2〜3行程度の短く要点をまとめたアドバイス形式で回答してください。
+              回答は「髪の毛の状態」という見出しをつけてください。`;
   } else if (type === 'tzone') {
-    prompt = '以下の顔写真のTゾーンについて、皮脂量、毛穴の目立ち具合、ニキビの有無を診断してください。';
+    prompt = `以下の顔写真のTゾーンについて、皮脂量、毛穴の目立ち具合、ニキビの有無を診断してください。
+              Tゾーンについて、2〜3行程度の短く要点をまとめたアドバイス形式で回答してください。
+              回答は「Tゾーンの状態」という見出しをつけてください。`;
   } else if (type === 'uzone') {
-    prompt = '以下の顔写真のUゾーンについて、乾燥・たるみ・赤み・フェイスラインの崩れを診断してください。';
+    prompt = `以下の顔写真のUゾーンについて、乾燥・たるみ・赤み・フェイスラインの崩れを診断してください。
+              Uゾーンについて、2〜3行程度の短く要点をまとめたアドバイス形式で回答してください。
+              回答は「Uゾーンの状態」という見出しをつけてください。`;
   } else if (type === 'eyes') {
-    prompt = '以下の顔写真の目元・口元について、エイジングサイン（小じわ、くすみ）を診断してください。';
+    prompt = `以下の顔写真の目元・口元について、エイジングサイン（小じわ、くすみ）を診断してください。
+              目元・口元について、2〜3行程度の短く要点をまとめたアドバイス形式で回答してください。
+              回答は「目元・口元の状態」という見出しをつけてください。`;
   }
 
   const formData = new FormData();
@@ -262,24 +274,35 @@ ${result}
       {preview && (
         <div className="flex flex-col items-center space-y-2">
           <img src={preview} alt="preview" className="rounded w-full max-w-xs" />
-          // 撮影して肌・髪をチェックボタンと同じように機能する撮り直しボタンの処理
+          {/* // 撮影して肌・髪をチェックボタンと同じように機能する撮り直しボタンの処理 */}
       <button
         onClick={() => {
          setCapturing(true);  // 再度カメラをアクティブにする
          setImage(null);      // 以前のイメージをリセット
          setPreview(null);    // プレビューをリセット
         }}
-        className="w-full w-48 px-4 py-2 bg-blue-500 text-white rounded"
+        className="w-full  md:w-48 px-4 py-2 bg-red-500 text-white rounded"
       >
       写真を撮り直す
       </button>
 
-          <button onClick={() => handleSubmit('full')} disabled={loading} className={`w-full md:w-48 px-4 py-2 rounded text-white ${loading ? "bg-gray-400" : "bg-blue-500"}`}>この写真で総合診断</button>
-          <p>気になるポイントを診断する</p>
-          <button onClick={() => handleSubmit('hair')} className="w-full w-48 px-4 py-2 bg-blue-500 text-white rounded">髪の毛</button>
-          <button onClick={() => handleSubmit('tzone')} className="w-full w-48 px-4 py-2 bg-blue-500 text-white rounded">Tゾーン</button>
-          <button onClick={() => handleSubmit('uzone')} className="w-full w-48 px-4 py-2 bg-blue-500 text-white rounded">Uゾーン</button>
-          <button onClick={() => handleSubmit('eyes')} className="w-full w-48 px-4 py-2 bg-blue-500 text-white rounded">目元・口元</button>
+      <button
+            onClick={() => handleSubmit('full')}
+            disabled={loading}
+            className={`w-full md:w-48 px-4 py-2 rounded text-white ${loading ? "bg-gray-400" : "bg-blue-500"}`}
+          >
+            この写真で総合診断
+          </button>
+          <p className="text-xl mt-2">　</p> 
+          <p className="text-xl mt-2">気になるポイントを診断する</p> 
+          <div className="flex justify-between w-full">
+            <button onClick={() => handleSubmit('hair')} className="w-1/2 md:w-1/4 px-4 py-2 bg-blue-500 text-white rounded mr-2">髪の毛</button>
+            <button onClick={() => handleSubmit('tzone')} className="w-1/2 md:w-1/4 px-4 py-2 bg-blue-500 text-white rounded ml-2">Tゾーン</button>
+          </div>
+          <div className="flex justify-between w-full mt-2">
+            <button onClick={() => handleSubmit('uzone')} className="w-1/2 md:w-1/4 px-4 py-2 bg-blue-500 text-white rounded mr-2">Uゾーン</button>
+            <button onClick={() => handleSubmit('eyes')} className="w-1/2 md:w-1/4 px-4 py-2 bg-blue-500 text-white rounded ml-2">目元・口元</button>
+          </div>
         </div>
       )}      
 
