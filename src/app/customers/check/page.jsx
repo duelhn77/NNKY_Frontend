@@ -1,5 +1,5 @@
 export const dynamic = 'force-dynamic'
-import OneCustomerInfoCard from "../../components/one_customer_info_card.jsx"; // ← パスも1つ深く変更
+import OneCustomerInfoCard from "../../../components/one_customer_info_card.jsx"; // ← パスも1つ深く変更
 
 async function fetchCustomer(id) {
   const res = await fetch(

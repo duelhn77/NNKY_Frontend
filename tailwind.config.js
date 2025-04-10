@@ -1,3 +1,5 @@
+// tailwind.config.js
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -7,12 +9,26 @@ module.exports = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'gradient-conic':
-          'conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))',
+      fontFamily: {
+        sans: ['"Helvetica Neue"', 'Segoe UI', 'Roboto', 'sans-serif'], // 落ち着きのある洗練フォント
+        heading: ['"Playfair Display"', 'serif'], // タイトルに高級感
+      },
+      colors: {
+        primary: {
+          DEFAULT: '#1E3A8A', // 落ち着いたネイビー
+          light: '#3B82F6',
+          dark: '#1E40AF',
+        },
+        accent: {
+          DEFAULT: '#F59E0B', // 高級感あるゴールド
+          light: '#FBBF24',
+        },
+        base: {
+          light: '#F9FAFB',
+          dark: '#111827',
+        },
       },
     },
   },
-  plugins: [require("daisyui")],
-}
+  plugins: [require('daisyui')],
+};
