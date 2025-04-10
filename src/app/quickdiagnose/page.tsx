@@ -19,7 +19,6 @@ export default function QuickDiagnose() {
   const [result, setResult] = useState<string>("");
   const [skincare, setSkincare] = useState<string>("");
   const [haircare, setHaircare] = useState<string>("");
-
   const [loading, setLoading] = useState(false);
   const [recommending, setRecommending] = useState<"skincare" | "haircare" | null>(null);
   const [capturing, setCapturing] = useState(false);
@@ -62,31 +61,66 @@ export default function QuickDiagnose() {
   }, []);
   
 
-  const handleSubmit = async () => {
-    if (!image) return;
-    setLoading(true);
+// type 引数に具体的な型を指定します。
+const handleSubmit = async (type: 'full' | 'hair' | 'tzone' | 'uzone' | 'eyes'): Promise<void> => {
+  if (!image) return;
+  setLoading(true);
 
-    const prompt = `以下の顔写真をもとに、以下の2点について簡潔に診断してください。
+  let prompt = ''; // prompt を空文字列で初期化しておく
+  if (type === 'full') {
+    prompt = '以下の顔写真をもとに、『肌の状態』と『髪の毛の状態』を診断してください。';
+  } else if (type === 'hair') {
+    prompt = '以下の顔写真をもとに、『髪の毛の状態』のみを診断してください。';
+  } else if (type === 'tzone') {
+    prompt = '以下の顔写真のTゾーンについて、皮脂量、毛穴の目立ち具合、ニキビの有無を診断してください。';
+  } else if (type === 'uzone') {
+    prompt = '以下の顔写真のUゾーンについて、乾燥・たるみ・赤み・フェイスラインの崩れを診断してください。';
+  } else if (type === 'eyes') {
+    prompt = '以下の顔写真の目元・口元について、エイジングサイン（小じわ、くすみ）を診断してください。';
+  }
 
-① 肌の状態（例：キメの細かさ、テカリ、乾燥、毛穴、シミ・くすみの有無など）
-② 髪の毛の状態（例：ハリ・コシ、ツヤ、毛量、乾燥・脂っぽさなど）
-肌と髪の毛それぞれについて、2〜3行程度の短く要点をまとめたアドバイス形式で回答してください。
-回答は「肌の状態」「髪の毛の状態」という見出しをつけてください。`;
+  const formData = new FormData();
+  formData.append("file", image);
+  formData.append("prompt", prompt);
 
-    const formData = new FormData();
-    formData.append("file", image);
-    formData.append("prompt", prompt);
+  const res = await fetch(`${BACKEND_URL}/diagnose`, {
+    method: "POST",
+    body: formData,
+  });
 
-    const res = await fetch(`${BACKEND_URL}/diagnose`, {
-      method: "POST",
-      body: formData,
-    });
+  const data = await res.json();
+  setResult(data.result);
+  setLoading(false);
+  setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+};
 
-    const data = await res.json();
-    setResult(data.result);
-    setLoading(false);
-    setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
-  };
+
+  // Old
+//   const handleSubmit = async () => {
+//     if (!image) return;
+//     setLoading(true);
+
+//     const prompt = `以下の顔写真をもとに、以下の2点について簡潔に診断してください。
+
+// ① 肌の状態（例：キメの細かさ、テカリ、乾燥、毛穴、シミ・くすみの有無など）
+// ② 髪の毛の状態（例：ハリ・コシ、ツヤ、毛量、乾燥・脂っぽさなど）
+// 肌と髪の毛それぞれについて、2〜3行程度の短く要点をまとめたアドバイス形式で回答してください。
+// 回答は「肌の状態」「髪の毛の状態」という見出しをつけてください。`;
+
+//     const formData = new FormData();
+//     formData.append("file", image);
+//     formData.append("prompt", prompt);
+
+//     const res = await fetch(`${BACKEND_URL}/diagnose`, {
+//       method: "POST",
+//       body: formData,
+//     });
+
+//     const data = await res.json();
+//     setResult(data.result);
+//     setLoading(false);
+//     setTimeout(() => resultRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
+//   };
 
   const fetchRecommendation = async (type: "skincare" | "haircare") => {
     setRecommending(type);
@@ -210,7 +244,7 @@ ${result}
 
 
       {/* ✅ プレビュー画像・診断ボタン */}
-      {preview && (
+      {/* {preview && (
         <div className="flex flex-col items-center space-y-2">
           <img src={preview} alt="preview" className="rounded w-full max-w-xs" />
           <button
@@ -223,7 +257,31 @@ ${result}
             この写真で診断
           </button>
         </div>
-      )}
+      )} */}
+
+      {preview && (
+        <div className="flex flex-col items-center space-y-2">
+          <img src={preview} alt="preview" className="rounded w-full max-w-xs" />
+          // 撮影して肌・髪をチェックボタンと同じように機能する撮り直しボタンの処理
+<button
+  onClick={() => {
+    setCapturing(true);  // 再度カメラをアクティブにする
+    setImage(null);      // 以前のイメージをリセット
+    setPreview(null);    // プレビューをリセット
+  }}
+  className="w-full w-48 px-4 py-2 bg-blue-500 text-white rounded"
+>
+  写真を撮り直す
+</button>
+
+          <button onClick={() => handleSubmit('full')} disabled={loading} className={`w-full md:w-48 px-4 py-2 rounded text-white ${loading ? "bg-gray-400" : "bg-blue-500"}`}>この写真で総合診断</button>
+          <p>気になるポイントを診断する</p>
+          <button onClick={() => handleSubmit('hair')} className="w-full w-48 px-4 py-2 bg-blue-500 text-white rounded">髪の毛</button>
+          <button onClick={() => handleSubmit('tzone')} className="w-full w-48 px-4 py-2 bg-blue-500 text-white rounded">Tゾーン</button>
+          <button onClick={() => handleSubmit('uzone')} className="w-full w-48 px-4 py-2 bg-blue-500 text-white rounded">Uゾーン</button>
+          <button onClick={() => handleSubmit('eyes')} className="w-full w-48 px-4 py-2 bg-blue-500 text-white rounded">目元・口元</button>
+        </div>
+      )}      
 
       {/* ✅ 診断結果・おすすめ */}
       {result && (
