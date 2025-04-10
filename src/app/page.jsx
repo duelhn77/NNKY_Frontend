@@ -12,6 +12,9 @@ import {
   X,
 } from "lucide-react";
 
+import { AlertCircle } from "lucide-react";
+import { motion } from "framer-motion";
+
 function App() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -208,7 +211,7 @@ function App() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent">
           <div className="container mx-auto px-4 h-full flex items-end pb-8">
             <h2 className="text-white text-3xl md:text-4xl font-bold">
-              プロの身だしなみカウンセラーが、あなたにぴったりのアドバイスを
+              カウンセラーが、あなたにぴったりの身だしなみを
             </h2>
           </div>
         </div>
@@ -219,9 +222,9 @@ function App() {
     <h2 className="text-xl md:text-2xl font-bold mb-4 text-gray-800">
       男性のためのオンラインビューティーカウンセリング
     </h2>
-    <p className="text-gray-600 leading-relaxed mb-6">
-      商品の使いかたや自分に似合うメイク、自分に似合うスキンケアの方法など、美容についてあらゆるお悩みにお答えいたします。
-      パーソナルビューティーパートナーがお客様おひとりひとり迅速なアドバイスを行ないます。
+    <p className="text-gray-600 leading-relaxed text-sm whitespace-pre-line">
+      自分に似合うヘアケア、スキンケア、ファッションなど、身だしなみについてパーソナルカウンセラーがあらゆるご相談にお応えいたします。{'\n'}
+      ご希望に応じてご自身にあったアイテムのご紹介、オンライン診療のご案内まで、お客様おひとりひとりに併せてご案内を致します。{'\n\n'}
     </p>
 
     {/* クイック診断ボタンをここに追加 */}
@@ -244,39 +247,93 @@ function App() {
 
 
       <div className="flex-1">
-        <div className="container mx-auto px-4 py-8">
-          <h2 className="text-2xl font-bold mb-6 text-gray-800">カウンセリング予約</h2>
-          <div className="grid gap-4">
-            <Link href="/consultation" className="block bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:bg-gray-50 transition">
-              <div className="flex items-center gap-4">
-                <div className="bg-blue-50 p-3 rounded-full">
-                  <Video className="w-6 h-6 text-blue-600" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-gray-800">ビデオ相談</h3>
-                  <p className="text-gray-600 text-sm mt-1">専門カウンセラーがオンラインビデオ通話でお客様一人一人のご相談にお応えします</p>
-                </div>
-                <ChevronRight className="w-5 h-5 text-gray-400" />
-              </div>
-            </Link>
+      <div className="bg-white py-10">
+  <div className="container mx-auto px-4">
+    <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+      カウンセリング予約
+    </h2>
 
-            <div
-  className="bg-white p-6 rounded-lg shadow-sm border border-gray-100 hover:bg-gray-50 transition cursor-pointer"
-  onClick={() => setIsLineModalOpen(true)}
->
-            <div className="flex items-center gap-4">
-              <div className="bg-green-50 p-3 rounded-full">
-                <MessageSquare className="w-6 h-6 text-green-600" />
-              </div>
-              <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-800">チャット相談</h3>
-                <p className="text-gray-600 text-sm mt-1">
-                  プロのアドバイザーがLINEによるチャットでいつでも相談をお受けします
-                </p>
-              </div>
-              <ChevronRight className="w-5 h-5 text-gray-400" />
-            </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      {/* ビデオ相談 */}
+      <Link
+        href="/consultation"
+        className="block bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:bg-gray-50 transition"
+      >
+        <div className="flex items-center gap-4">
+          <div className="bg-blue-50 p-3 rounded-full">
+            <Video className="w-6 h-6 text-blue-600" />
           </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-gray-800">ビデオ相談</h3>
+            <p className="text-gray-600 text-sm mt-1">
+              専門カウンセラーがオンラインビデオ通話でお客様一人一人のご相談にお応えします
+            </p>
+          </div>
+          <ChevronRight className="w-5 h-5 text-gray-400" />
+        </div>
+      </Link>
+
+      {/* チャット相談 */}
+      <div
+        className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:bg-gray-50 transition cursor-pointer"
+        onClick={() => setIsLineModalOpen(true)}
+      >
+        <div className="flex items-center gap-4">
+          <div className="bg-green-50 p-3 rounded-full">
+            <MessageSquare className="w-6 h-6 text-green-600" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-gray-800">チャット相談</h3>
+            <p className="text-gray-600 text-sm mt-1">
+              プロのアドバイザーがLINEによるチャットでいつでも相談をお受けします
+            </p>
+          </div>
+          <ChevronRight className="w-5 h-5 text-gray-400" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div className="bg-slate-100 py-12 border-t border-b">
+  <div className="container mx-auto px-4">
+    <h2 className="text-2xl font-bold text-center text-gray-800 mb-2">
+      よくあるお悩み、ありませんか？
+    </h2>
+    <p className="text-center text-gray-500 mb-8 text-sm">
+      30代・40代男性が直面する「見た目の変化」に、そっと寄り添います。
+    </p>
+
+    <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+      {[
+        "娘から「老けた？」と言われるが、何を変えればいいかわからない",
+        "服装もヘアケアもスキンケアも、総合的・客観的にアドバイスをくれる人がいない",
+        "「体型が崩れたこと」よりも「体型に合わせた服がわからない」ことが悩み",
+        "白髪を染めているのに「疲れてそう」と言われる理由がわからない",
+        "20代の部下に“なんか、うちの父に似てる”と言われて凹んだ",
+        "ランチ後に“顔テカテカ”になるが、脂取り紙が逆に肌荒れを引き起こす",
+      ].map((worry, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: i * 0.1 }}
+          viewport={{ once: true }}
+          className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex items-start gap-4"
+        >
+          <div className="text-blue-500">
+            <AlertCircle className="w-6 h-6" />
+          </div>
+          <p className="text-gray-700 text-sm leading-relaxed">“{worry}”</p>
+        </motion.div>
+      ))}
+    </div>
+  </div>
+</div>
+
+
+
 
 
 <div className="bg-white py-10 border-t border-b">
@@ -357,7 +414,7 @@ function App() {
             <h2 className="text-2xl font-bold mb-6 text-gray-800">選ばれる理由</h2>
             <div className="grid gap-6">
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <h3 className="font-semibold text-gray-800 mb-2">マンダムの研究成果</h3>
+                <h3 className="font-semibold text-gray-800 mb-2">マンダムの研究成果を凝縮</h3>
                 <p className="text-gray-600 text-sm">マンダムの長年の研究に基づく科学的アドバイス</p>
               </div>
               <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
@@ -371,14 +428,13 @@ function App() {
             </div>
           </div>
         </div>
-      </div>
-      </div>
+  
 
       <footer className="bg-gray-900 text-white py-12">
   <div className="container mx-auto px-4">
     <div className="flex flex-col md:flex-row md:justify-center md:text-left items-start text-center md:items-start gap-6">
       <div className="max-w-xs">
-        <h3 className="text-xl font-bold mb-2">SmartLook 40+</h3>
+        <h3 className="text-xl font-bold mb-2">SmartLook +</h3>
         <p className="text-gray-400 text-sm">
           株式会社スマートルック<br />
           〒100-0001<br />
