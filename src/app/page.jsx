@@ -93,7 +93,13 @@ function App() {
           >
             <Menu className="w-6 h-6" />
           </button>
-          <div className="text-xl font-bold">SmartLook 40+</div>
+          <div className="flex items-center">
+            <img
+              src="/logo.png"
+              alt="SmartLook+ ロゴ"
+              className="h-30 md:h-42 lg:h-48 w-auto object-contain"
+            />
+          </div>
           <div>
             {isAuthenticated ? (
               <button className="text-blue-600 hover:text-blue-700 font-medium">
@@ -398,64 +404,67 @@ function App() {
       あなたに寄り添うプロフェッショナルがお待ちしています
     </p>
 
-    <div className="overflow-x-auto">
-      <div className="flex justify-center gap-4 px-1 min-w-full">
-        {[
-          {
-            name: "べい",
-            img: "/counselor1.png",
-            genre: "スキンケア",
-          },
-          {
-            name: "みーりん",
-            img: "/counselor2.png",
-            genre: "スキンケア",
-          },
-          {
-            name: "なりさん",
-            img: "/counselor3.png",
-            genre: "身だしなみ・印象アップ",
-          },
-          {
-            name: "やまけい",
-            img: "/counselor4.png",
-            genre: "髪型・ヘアケア",
-          },
-        ].map((c, i) => (
-          <div
-            key={i}
-            className="min-w-[200px] bg-gray-50 rounded-xl shadow-sm flex-shrink-0 text-center"
-          >
+    {/* カウンセラー一覧：横並びをgridに変更 */}
+    <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+      {[
+        {
+          name: "べい",
+          img: "/counselor1.png",
+          genre: "スキンケア",
+        },
+        {
+          name: "みーりん",
+          img: "/counselor2.png",
+          genre: "スキンケア",
+        },
+        {
+          name: "なりさん",
+          img: "/counselor3.png",
+          genre: "身だしなみ・印象アップ",
+        },
+        {
+          name: "やまけい",
+          img: "/counselor4.png",
+          genre: "髪型・ヘアケア",
+        },
+      ].map((c, i) => (
+        <div key={i} className="bg-gray-50 rounded-xl shadow-sm text-center p-3">
+          <div className="aspect-[3/4] w-full overflow-hidden rounded-xl">
             <img
               src={c.img}
               alt={c.name}
-              className="w-full h-[220px] object-cover rounded-t-xl"
+              className="w-full h-full object-cover rounded-t-xl"
             />
-            <div className="p-3">
-              <p className="text-gray-800 font-semibold text-sm">{c.name}</p>
-              <p className="text-xs text-gray-500 mt-1">{c.genre}</p>
-              <div className="flex justify-center mt-2">
-                <a
-                  href="https://www.instagram.com/mandom.online/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-pink-600 hover:text-pink-700"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 2 .3 2.5.5.6.3 1.1.6 1.6 1.1.5.5.8 1 .9 1.6.2.5.4 1.3.5 2.5.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.3 2-.5 2.5-.3.6-.6 1.1-1.1 1.6-.5.5-1 .8-1.6.9-.5.2-1.3.4-2.5.5-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-2-.3-2.5-.5-.6-.3-1.1-.6-1.6-1.1-.5-.5-.8-1-.9-1.6-.2-.5-.4-1.3-.5-2.5C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.3-2 .5-2.5.3-.6.6-1.1 1.1-1.6.5-.5 1-.8 1.6-.9.5-.2 1.3-.4 2.5-.5C8.4 2.2 8.8 2.2 12 2.2m0-2.2C8.7 0 8.3 0 7 .1 5.8.2 4.9.4 4.1.7 3.2 1 2.5 1.5 1.8 2.2 1.1 2.9.6 3.6.3 4.5c-.3.8-.5 1.7-.6 2.9C0 8.3 0 8.7 0 12s0 3.7.1 4.6c.1 1.2.3 2.1.6 2.9.3.9.8 1.6 1.5 2.3.7.7 1.4 1.2 2.3 1.5.8.3 1.7.5 2.9.6.9.1 1.3.1 4.6.1s3.7 0 4.6-.1c1.2-.1 2.1-.3 2.9-.6.9-.3 1.6-.8 2.3-1.5.7-.7 1.2-1.4 1.5-2.3.3-.8.5-1.7.6-2.9.1-.9.1-1.3.1-4.6s0-3.7-.1-4.6c-.1-1.2-.3-2.1-.6-2.9-.3-.9-.8-1.6-1.5-2.3-.7-.7-1.4-1.2-2.3-1.5-.8-.3-1.7-.5-2.9-.6C15.7 0 15.3 0 12 0z" />
-                    <path d="M12 5.8c-3.4 0-6.2 2.8-6.2 6.2s2.8 6.2 6.2 6.2 6.2-2.8 6.2-6.2-2.8-6.2-6.2-6.2zm0 10.3c-2.3 0-4.1-1.8-4.1-4.1S9.7 7.9 12 7.9s4.1 1.8 4.1 4.1-1.9 4.1-4.1 4.1zM18.4 4.6c0 .8-.6 1.5-1.5 1.5S15.4 5.4 15.4 4.6s.6-1.5 1.5-1.5 1.5.7 1.5 1.5z" />
-                  </svg>
-                </a>
-              </div>
-            </div>
           </div>
-        ))}
-      </div>
+          <p className="text-gray-800 font-semibold text-sm mt-2">{c.name}</p>
+          <p className="text-xs text-gray-500">{c.genre}</p>
+          <div className="flex justify-center mt-2">
+            <a
+              href="https://www.instagram.com/mandom.online/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-pink-600 hover:text-pink-700"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5"
+                fill="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path d="M7.75 2A5.75 5.75 0 0 0 2 7.75v8.5A5.75 5.75 0 0 0 7.75 22h8.5A5.75 5.75 0 0 0 22 16.25v-8.5A5.75 5.75 0 0 0 16.25 2h-8.5ZM4.5 7.75A3.25 3.25 0 0 1 7.75 4.5h8.5A3.25 3.25 0 0 1 19.5 7.75v8.5a3.25 3.25 0 0 1-3.25 3.25h-8.5A3.25 3.25 0 0 1 4.5 16.25v-8.5Zm7.5-.25a4.25 4.25 0 1 0 0 8.5 4.25 4.25 0 0 0 0-8.5Zm0 1.5a2.75 2.75 0 1 1 0 5.5 2.75 2.75 0 0 1 0-5.5Zm5.25-.75a.75.75 0 1 0 0 1.5.75.75 0 0 0 0-1.5Z" />
+                </svg>
+
+              </svg>
+            </a>
+          </div>
+        </div>
+      ))}
     </div>
   </div>
 </div>
@@ -463,39 +472,43 @@ function App() {
 
 
 
-          <div className="mt-12">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">選ばれる理由</h2>
-            <div className="grid gap-6">
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <h3 className="font-semibold text-gray-800 mb-2">マンダムの研究成果を凝縮</h3>
-                <p className="text-gray-600 text-sm">マンダムの長年の研究に基づく科学的アドバイス</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <h3 className="font-semibold text-gray-800 mb-2">プロの専門カウンセラー</h3>
-                <p className="text-gray-600 text-sm">男性特有の悩みに精通したスペシャリストが対応</p>
-              </div>
-              <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-100">
-                <h3 className="font-semibold text-gray-800 mb-2">充実のアフターフォロー</h3>
-                <p className="text-gray-600 text-sm">カウンセリング後もLINEで気軽に相談可能</p>
-              </div>
-            </div>
-          </div>
+
+<div className="bg-white py-12 border-t">
+  <div className="max-w-screen-md mx-auto px-4 text-center">
+    <h2 className="text-2xl font-bold mb-6 text-gray-800">選ばれる理由</h2>
+    <div className="grid gap-6">
+      <div className="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-100">
+        <h3 className="font-semibold text-gray-800 mb-2">マンダムの研究成果を凝縮</h3>
+        <p className="text-gray-600 text-sm">マンダムの長年の研究に基づく科学的アドバイス</p>
+      </div>
+      <div className="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-100">
+        <h3 className="font-semibold text-gray-800 mb-2">プロの専門カウンセラー</h3>
+        <p className="text-gray-600 text-sm">男性特有の悩みに精通したスペシャリストが対応</p>
+      </div>
+      <div className="bg-gray-50 p-6 rounded-lg shadow-sm border border-gray-100">
+        <h3 className="font-semibold text-gray-800 mb-2">充実のアフターフォロー</h3>
+        <p className="text-gray-600 text-sm">カウンセリング後もLINEで気軽に相談可能</p>
+      </div>
+    </div>
+  </div>
+</div>
+
         </div>
   
 
-      <footer className="bg-gray-900 text-white py-12">
+        <footer className="bg-gray-900 text-white py-12">
   <div className="container mx-auto px-4">
-    <div className="flex flex-col md:flex-row md:justify-center md:text-left items-start text-center md:items-start gap-6">
-      <div className="max-w-xs">
-        <h3 className="text-xl font-bold mb-2">SmartLook +</h3>
-        <p className="text-gray-400 text-sm">
-          株式会社スマートルック<br />
-          〒100-0001<br />
-          東京都千代田区千代田1-1-1
-        </p>
-      </div>
-      <div className="max-w-xs">
-        <h4 className="font-semibold mb-2">会社情報</h4>
+    
+    {/* ① ロゴ：中央揃え */}
+    <div className="text-center mb-8">
+      <h3 className="text-xl font-bold">SmartLook +</h3>
+    </div>
+
+    {/* ② 情報セクション：中央配置で左揃え */}
+    <div className="flex flex-col md:flex-row justify-center items-start gap-12 text-left">
+      {/* 運営者情報 */}
+      <div>
+        <h4 className="font-semibold mb-2">会社概要・利用規約</h4>
         <ul className="text-gray-400 text-sm space-y-1">
           <li>会社概要</li>
           <li>プライバシーポリシー</li>
@@ -503,18 +516,20 @@ function App() {
           <li>特定商取引法に基づく表記</li>
         </ul>
       </div>
-      <div className="max-w-xs">
+
+      {/* お問い合わせ */}
+      <div>
         <h4 className="font-semibold mb-2">お問い合わせ</h4>
-        <p className="text-gray-400 text-sm">
-          メール: info@smartlook40.jp<br />
+        <p className="text-gray-400 text-sm leading-relaxed">
+          メール: info@smartlook.jp<br />
           LINE: @smartlook40
         </p>
       </div>
+
     </div>
 
-    {/* SNS & LINE リンクセクション */}
-    <div className="mt-8 flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 text-center">
-      {/* Instagram */}
+    {/* ③ SNS & LINEリンク */}
+    <div className="mt-8 flex justify-center items-center gap-4">
       <a
         href="https://www.instagram.com/mandom.online/"
         target="_blank"
@@ -527,11 +542,10 @@ function App() {
           fill="currentColor"
           viewBox="0 0 24 24"
         >
-          <path d="M12 2.2c3.2 0 3.6 0 4.9.1...（省略）" />
+          <path d="M12 2.2c3.2..." />
         </svg>
       </a>
 
-      {/* LINE */}
       <a
         href="https://page.line.me/058pijie"
         target="_blank"
@@ -542,12 +556,14 @@ function App() {
       </a>
     </div>
 
-    {/* 著作権 */}
+    {/* ④ 著作権表示 */}
     <div className="mt-8 pt-8 border-t border-gray-800 text-center text-gray-400 text-sm">
-      © 2024 SmartLook 40+ All rights reserved.
+      © 2025 NNKY Connection, Inc. All rights reserved.
     </div>
   </div>
 </footer>
+
+
 
 
       {isLineModalOpen && (

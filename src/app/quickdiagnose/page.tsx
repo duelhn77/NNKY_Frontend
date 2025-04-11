@@ -173,8 +173,18 @@ ${result}
   };
 
   return (
-    <div className="p-4 max-w-md mx-auto relative">
-      <h1 className="text-2xl font-bold mb-4 text-center">クイック診断</h1>
+    <div className="bg-white min-h-screen text-gray-800">
+      <header className="bg-white shadow-sm border-b">
+        <div className="h-16 flex items-center justify-center">
+          <img src="/logo.png" className="h-28 object-contain block" />
+        </div>
+      </header>
+
+      <main className="max-w-md mx-auto p-4">
+        <h2 className="text-xl font-semibold text-center mb-6">クイック診断</h2>
+        <p className="text-sm text-gray-600 text-center mb-4">
+          クイック診断では、スマホで撮影した顔写真からAIが肌・髪の状態を分析し、あなたに合ったアドバイスを数秒で表示します。
+        </p>
 
       {/* ✅ モーダルスピナー */}
       {(loading || recommending !== null) && (
@@ -294,7 +304,7 @@ ${result}
             この写真で総合診断
           </button>
           <p className="text-xl mt-2">　</p> 
-          <p className="text-xl mt-2">気になるポイントを診断する</p> 
+          <p className="text-sm text-gray-600 mt-4">気になる部分だけ診断したい方はこちら</p>
           <div className="flex justify-between w-full">
             <button onClick={() => handleSubmit('hair')} className="w-1/2 md:w-1/4 px-4 py-2 bg-blue-500 text-white rounded mr-2">髪の毛</button>
             <button onClick={() => handleSubmit('tzone')} className="w-1/2 md:w-1/4 px-4 py-2 bg-blue-500 text-white rounded ml-2">Tゾーン</button>
@@ -308,7 +318,7 @@ ${result}
 
       {/* ✅ 診断結果・おすすめ */}
       {result && (
-        <div ref={resultRef} className="mt-6 p-4 border rounded bg-gray-100 space-y-4">
+       <div ref={resultRef} className="mt-8 p-4 border rounded-lg bg-gray-50 space-y-6">
           <div>
             <h2 className="text-lg font-semibold mb-1">診断結果</h2>
             {result.split(/\n|(?=\d\.\s)/).map((p, i) => (
@@ -393,6 +403,19 @@ ${result}
 
         </div>
       )}
+
+<div className="mt-10 text-center">
+  <Link
+    href="/"
+    className="inline-block text-sm text-blue-600 hover:underline hover:text-blue-800"
+  >
+    トップページへ戻る
+  </Link>
+</div>
+
+
+
+       </main>
     </div>
   );
 }
