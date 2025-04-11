@@ -226,6 +226,7 @@ function App() {
                   ログイン
                 </button>
               </form>
+
             ) : (
               <form onSubmit={handleRegister} className="space-y-4">
                 {/* 既存の会員登録フォームの各項目はそのまま */}
@@ -237,7 +238,90 @@ function App() {
                     登録前に会員規約とプライバシーポリシーをご確認ください。アカウントID・パスワードを他人に教えないようご注意ください。
                   </p>
                 </div>
-
+                <div className="space-y-3" onSubmit={handleRegister}>
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      type="text"
+                      placeholder="姓（漢字）"
+                      className="border px-2 py-1 rounded"
+                      required
+                      value={registerForm.lastName}
+                      onChange={(e) =>
+                        setRegisterForm({ ...registerForm, lastName: e.target.value })
+                      }
+                    />
+                    <input
+                      type="text"
+                      placeholder="名（漢字）"
+                      className="border px-2 py-1 rounded"
+                      required
+                      value={registerForm.firstName}
+                      onChange={(e) =>
+                        setRegisterForm({ ...registerForm, firstName: e.target.value })
+                      }
+                    />
+                    <input
+                      type="text"
+                      placeholder="セイ（カタカナ）"
+                      className="border px-2 py-1 rounded"
+                      required
+                      value={registerForm.lastNameKana}
+                      onChange={(e) =>
+                        setRegisterForm({ ...registerForm, lastNameKana: e.target.value })
+                      }
+                    />
+                    <input
+                      type="text"
+                      placeholder="メイ（カタカナ）"
+                      className="border px-2 py-1 rounded"
+                      required
+                      value={registerForm.firstNameKana}
+                      onChange={(e) =>
+                        setRegisterForm({ ...registerForm, firstNameKana: e.target.value })
+                      }
+                    />
+                  </div>
+                  <input
+                    type="email"
+                    placeholder="メールアドレス"
+                    className="w-full border px-3 py-2 rounded"
+                    required
+                    value={registerForm.email}
+                    onChange={(e) =>
+                      setRegisterForm({ ...registerForm, email: e.target.value })
+                    }
+                  />
+                  <input
+                    type="tel"
+                    placeholder="電話番号"
+                    className="w-full border px-3 py-2 rounded"
+                    required
+                    value={registerForm.phone}
+                    onChange={(e) =>
+                      setRegisterForm({ ...registerForm, phone: e.target.value })
+                    }
+                  />
+                  <input
+                    type="date"
+                    placeholder="生年月日"
+                    className="w-full border px-3 py-2 rounded"
+                    required
+                    value={registerForm.birthDate}
+                    onChange={(e) =>
+                      setRegisterForm({ ...registerForm, birthDate: e.target.value })
+                    }
+                  />
+                  <input
+                    type="password"
+                    placeholder="パスワード"
+                    className="w-full border px-3 py-2 rounded"
+                    required
+                    value={registerForm.password}
+                    onChange={(e) =>
+                      setRegisterForm({ ...registerForm, password: e.target.value })
+                    }
+                  />
+                </div>
                 <button
                   type="submit"
                   className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
