@@ -45,7 +45,7 @@ function App() {
     birthDate: '',
   });
   const [bookingDetails, setBookingDetails] = useState({
-    consultationType: 'スキンケア',
+    consultationType: 'ヘアスタイル',
     questionnaire: null,
     date: null,
     timeSlot: null,
