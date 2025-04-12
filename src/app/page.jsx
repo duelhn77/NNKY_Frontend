@@ -112,7 +112,7 @@ function App() {
         </div>
       </header>
 
-      {/* // JSXでフォームを描画 */}
+      {/* // JSXでフォームを描画
       <form onSubmit={handleLogin}>
       <input
         type="email"
@@ -127,7 +127,7 @@ function App() {
         required
       />
       <button type="submit">ログイン</button>
-    </form>
+    </form> */}
 
 
 {isMenuOpen && (
