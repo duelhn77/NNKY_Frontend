@@ -180,23 +180,23 @@ export const QuestionnaireForm = ({ onSubmit, onBack }) => {
         />
       </div>
 
-      {/* ボタンエリア：左右に「戻る」「次へ」 */}
-      <div className="pt-6 flex justify-between">
-        <button
-          type="button"
-          onClick={onBack}
-          className="flex items-center px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-        >
-          <ArrowLeft size={16} className="mr-2" />
-          戻る
-        </button>
+<div className="pt-6 flex flex-col sm:flex-row gap-4 sm:justify-between">
+  <button
+    type="button"
+    onClick={onBack}
+    className="w-full sm:w-auto flex items-center justify-center px-6 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-100"
+  >
+    ← 戻る
+  </button>
 
-        <button
-          type="submit"
-          className="flex items-center px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700"
-        >
-          送信してカウンセリング予約へ進む
-          <ArrowRight size={16} className="ml-2" />
-        </button>
-      </div>
-</form>)}
+  <button
+    type="submit"
+    className="w-full sm:w-auto flex items-center justify-center px-6 py-2 bg-gray-800 text-white rounded-md hover:bg-gray-700 transition"
+  >
+    カウンセリング予約へ進む
+  </button>
+</div>
+</form>
+);
+};
+

@@ -4,7 +4,8 @@ import { StepBar } from '@/components/StepBar';
 import { Calendar } from '@/components/Calendar';
 import { TimeSlots } from '@/components/TimeSlots';
 import { UserForm } from '@/components/UserForm';
-import { QuestionnaireForm } from '@/components/QuestionnaireForm';
+
+import { QuestionnaireForm_fashion } from '@/components/QuestionnaireForm_fashion';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import axios from "axios";
 
@@ -24,11 +25,14 @@ const MOCK_TIME_SLOTS = [
 
 
 
+
+
 function App() {
   const [currentStep, setCurrentStep] = useState(2);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const BACKEND_URL = process.env.NEXT_PUBLIC_API_ENDPOINT;
+
   const [loginForm, setLoginForm] = useState({
     email: '',
     password: ''
@@ -46,6 +50,7 @@ function App() {
   });
   const [bookingDetails, setBookingDetails] = useState({
     consultationType: 'ファッション',
+
     questionnaire: null,
     date: null,
     timeSlot: null,
@@ -143,6 +148,7 @@ function App() {
   };
   
 
+
   const handleRegister = async (e) => {
     e.preventDefault();
   
@@ -163,11 +169,13 @@ function App() {
       alert("会員登録に失敗しました。");
     }
   };
+
   
   const handleConfirm = () => {
     console.log('Booking confirmed:', bookingDetails);
     alert('予約が完了しました。');
   };
+
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -188,8 +196,10 @@ function App() {
                 こんなかたにおすすめ！
               </p>
               <ul className="list-disc list-inside text-gray-600 mb-8">
-                <li>肌や髪の別のケア方法が知りたい方</li>
-                <li>今の洗顔や化粧水などが自分に合っているか不安</li>
+
+                <li>年齢にあったファッションが分からず無難な恰好ばかりしてしまう</li>
+                <li>体形が変わってきて服が似合わなくなった</li>
+
               </ul>
               <p className="text-sm text-gray-500">
                 ※予定時間：45分
@@ -205,10 +215,12 @@ function App() {
               <p className="text-gray-600 mb-8">
                 より良いカウンセリングのため、以下の質問にお答えください。
               </p>
-              <QuestionnaireForm 
-              onSubmit={handleQuestionnaireSubmit} 
-              onBack={handleBack}  
-/>
+
+              <QuestionnaireForm_fashion
+                onSubmit={handleQuestionnaireSubmit}
+                onBack={handleBack}
+              />
+
 
             </div>
           )}
@@ -247,20 +259,24 @@ function App() {
                     placeholder="メールアドレス"
                     className="w-full border px-3 py-2 rounded"
                     required
+
                     value={loginForm.email}
                     onChange={(e) =>
                       setLoginForm({ ...loginForm, email: e.target.value })
                     }
+
                   />
                   <input
                     type="password"
                     placeholder="パスワード"
                     className="w-full border px-3 py-2 rounded"
                     required
+
                     value={loginForm.password}
                     onChange={(e) =>
                       setLoginForm({ ...loginForm, password: e.target.value })
                     }
+
                   />
                   <button
                     type="submit"
@@ -301,6 +317,9 @@ function App() {
                       placeholder="セイ（カタカナ）"
                       className="border px-2 py-1 rounded"
                       required
+
+                      value={registerForm.lastNameKana}
+
                       onChange={(e) =>
                         setRegisterForm({ ...registerForm, lastNameKana: e.target.value })
                       }
@@ -310,6 +329,9 @@ function App() {
                       placeholder="メイ（カタカナ）"
                       className="border px-2 py-1 rounded"
                       required
+
+                      value={registerForm.firstNameKana}
+
                       onChange={(e) =>
                         setRegisterForm({ ...registerForm, firstNameKana: e.target.value })
                       }
@@ -350,6 +372,9 @@ function App() {
                     placeholder="パスワード"
                     className="w-full border px-3 py-2 rounded"
                     required
+
+                    value={registerForm.password}
+
                     onChange={(e) =>
                       setRegisterForm({ ...registerForm, password: e.target.value })
                     }
@@ -374,16 +399,24 @@ function App() {
                   <p>{bookingDetails.consultationType}</p>
                 </div>
                 {bookingDetails.questionnaire && (
-                  <div className="border-b pb-4">
+
+                  <div className="border-b pb-4 space-y-2">
                     <h3 className="font-medium">アンケート回答</h3>
-                    <p>肌タイプ: {bookingDetails.questionnaire.skinType}</p>
-                    <p>お悩み: {bookingDetails.questionnaire.skinConcerns.join(', ')}</p>
-                    <p>使用中のアイテム: {bookingDetails.questionnaire.skincareItems.join(', ')}</p>
-                    {bookingDetails.questionnaire.notes && (
-                      <p>その他ご要望: {bookingDetails.questionnaire.notes}</p>
+
+                    <p><strong>Q1:</strong> {bookingDetails.questionnaire.q1?.join(', ') || '未回答'}</p>
+                    <p><strong>Q2:</strong> {bookingDetails.questionnaire.q2?.join(', ') || '未回答'}</p>
+                    <p><strong>Q3:</strong> {bookingDetails.questionnaire.q3?.join(', ') || '未回答'}</p>
+                    {bookingDetails.questionnaire.q3?.includes('その他') && bookingDetails.questionnaire.q3_other && (
+                      <p><strong>Q3-補足:</strong> {bookingDetails.questionnaire.q3_other}</p>
+                    )}
+                    <p><strong>Q4:</strong> {bookingDetails.questionnaire.q4?.join(', ') || '未回答'}</p>
+                    {bookingDetails.questionnaire.q4?.includes('その他') && bookingDetails.questionnaire.q4_other && (
+                      <p><strong>Q4-補足:</strong> {bookingDetails.questionnaire.q4_other}</p>
                     )}
                   </div>
                 )}
+
+
                 <div className="border-b pb-4">
                   <h3 className="font-medium">予約日時</h3>
                   <p>

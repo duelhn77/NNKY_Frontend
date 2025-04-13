@@ -6,6 +6,7 @@ export const TimeSlots = ({ slots, selectedTime, onTimeSelect }) => {
     <div className="mt-8">
       <h3 className="text-lg font-medium mb-4">予約可能な時間</h3>
       <div className="grid grid-cols-2 gap-4">
+
         {slots.map((slot) => {
           const isSelected = selectedTime === slot.time;
           return (
@@ -29,6 +30,7 @@ export const TimeSlots = ({ slots, selectedTime, onTimeSelect }) => {
             </button>
           );
         })}
+
       </div>
     </div>
   );

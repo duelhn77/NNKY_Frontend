@@ -5,10 +5,10 @@ import { Check } from 'lucide-react';
 export const StepBar = ({ currentStep, steps }) => {
   return (
     <div className="w-full py-6">
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center flex-wrap gap-y-4">
         {steps.map((step, index) => (
           <React.Fragment key={index}>
-            <div className="flex flex-col items-center">
+            <div className="flex flex-col items-center min-w-[64px] text-center">
               <div
                 className={`w-8 h-8 rounded-full flex items-center justify-center border-2 
                   ${
@@ -22,7 +22,7 @@ export const StepBar = ({ currentStep, steps }) => {
                 {index < currentStep ? (
                   <Check size={16} />
                 ) : (
-                  <span>{index + 1}</span>
+                  <span className="text-sm">{index + 1}</span>
                 )}
               </div>
               <span
@@ -35,7 +35,7 @@ export const StepBar = ({ currentStep, steps }) => {
             </div>
             {index < steps.length - 1 && (
               <div
-                className={`h-[2px] w-16 mx-2 ${
+                className={`h-[2px] w-6 sm:w-12 mx-1 sm:mx-2 ${
                   index < currentStep ? 'bg-gray-800' : 'bg-gray-300'
                 }`}
               />
