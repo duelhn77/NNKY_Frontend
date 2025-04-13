@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StepBar } from '@/components/StepBar';
 import { Calendar } from '@/components/Calendar';
 import { TimeSlots } from '@/components/TimeSlots';
@@ -10,32 +10,37 @@ import axios from "axios";
 
 const STEPS = ['コース選択', '問診回答', '日時選択', 'ログイン/会員登録', '予約内容確認'];
 
-const MOCK_TIME_SLOTS = [
-  { time: '10:00-10:30', available: true },
-  { time: '10:30-11:00', available: false },
-  { time: '11:00-11:30', available: true },
-  { time: '11:30-12:00', available: true },
-  { time: '13:00-13:30', available: false },
-  { time: '13:30-14:00', available: true },
-  { time: '14:00-14:30', available: true },
-  { time: '14:30-15:00', available: false },
+// const MOCK_TIME_SLOTS = [
+//   { time: '10:00-10:30', available: true },
+//   { time: '10:30-11:00', available: false },
+//   { time: '11:00-11:30', available: true },
+//   { time: '11:30-12:00', available: true },
+//   { time: '13:00-13:30', available: false },
+//   { time: '13:30-14:00', available: true },
+//   { time: '14:00-14:30', available: true },
+//   { time: '14:30-15:00', available: false },
+// ];
+
+const DEFAULT_TIME_SLOTS = [
+  '10:00-10:30',
+  '10:30-11:00',
+  '11:00-11:30',
+  '11:30-12:00',
+  '13:00-13:30',
+  '13:30-14:00',
+  '14:00-14:30',
+  '14:30-15:00'
 ];
 
+
+
+
 function App() {
-  const [currentStep, setCurrentStep] = useState(2);
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const BACKEND_URL = process.env.NEXT_PUBLIC_API_ENDPOINT;
-  const [registerForm, setRegisterForm] = useState({
-      firstName: '',
-      lastName: '',
-      firstNameKana: '',
-      lastNameKana: '',
-      email: '',
-      phone: '',
-      password: '',
-      birthDate: '',
-    });
+  const [currentStep, setCurrentStep] = useState(2);
+  const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
+  const [selectedScheduleId, setSelectedScheduleId] = useState(null);
+  const [schedules, setSchedules] = useState([]);
   const [bookingDetails, setBookingDetails] = useState({
     consultationType: 'トータルカウンセリング',
     questionnaire: null,
@@ -50,7 +55,80 @@ function App() {
       email: '',
       notes: '',
     },
+    
   });
+ 
+  useEffect(() => {
+    const fetchBookedSchedules = async () => {
+      if (!bookingDetails.date) return;
+  
+      try {
+        const res = await axios.get(`${BACKEND_URL}/schedules`);
+        const selectedDate = new Date(bookingDetails.date).toDateString();
+  
+        setSchedules(res.data); // ✅ ここで全体のスケジュール保存！
+  
+        // 予約済みスロットを絞り込み
+        const bookedSlots = res.data
+          .filter(s => {
+            const sDate = new Date(s.start_time).toDateString();
+            return s.reservation_status === "booked" && sDate === selectedDate;
+          })
+          .map(s => {
+            const start = new Date(s.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const end = new Date(s.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            return `${start}-${end}`;
+          });
+  
+        setBookedTimeSlots(bookedSlots);
+      } catch (error) {
+        console.error("スケジュール取得エラー:", error);
+      }
+    };
+  
+    fetchBookedSchedules();
+  }, [bookingDetails.date]);
+  
+  
+
+
+  const timeSlotsWithAvailability = DEFAULT_TIME_SLOTS.map((timeStr) => {
+    const matchedSchedule = schedules.find((s) => {
+      const sDate = new Date(s.start_time).toDateString();
+      const selectedDate = new Date(bookingDetails.date).toDateString();
+      if (sDate !== selectedDate) return false;
+  
+      const start = new Date(s.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const end = new Date(s.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      const formatted = `${start}-${end}`;
+      return formatted === timeStr;
+    });
+  
+    return {
+      id: matchedSchedule?.schedule_id ?? null,  // ←仮IDでもOK
+      time: timeStr,
+      available: matchedSchedule ? matchedSchedule.reservation_status === 'open' : true,
+  // open のときだけ true
+    };
+  });
+  
+   
+  
+
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
+  const [registerForm, setRegisterForm] = useState({
+      firstName: '',
+      lastName: '',
+      firstNameKana: '',
+      lastNameKana: '',
+      email: '',
+      phone: '',
+      password: '',
+      birthDate: '',
+    });
+  
   const [loginForm, setLoginForm] = useState({
     email: '',
     password: ''
@@ -114,10 +192,74 @@ function App() {
     handleNext();
   };
 
-  const handleConfirm = () => {
-    console.log('Booking confirmed:', bookingDetails);
-    alert('予約が完了しました。');
+  // ① 関数の上部で定義（handleConfirmより上の位置）に追加
+  const toJSTISOString = (date) => {
+   const offsetMs = date.getTimezoneOffset() * 60 * 1000;
+   const localDate = new Date(date.getTime() - offsetMs);
+   return localDate.toISOString().slice(0, 19); // 'YYYY-MM-DDTHH:mm:ss'
   };
+
+
+
+  // 4/12 作業
+  const handleConfirm = async () => {
+    if (!bookingDetails.date || !bookingDetails.timeSlot) {
+      alert("日付と時間を選択してください");
+      return;
+    }
+  
+    const user_id = localStorage.getItem("user_id");
+    if (!user_id) {
+      alert("ユーザー情報が見つかりません。ログインし直してください。");
+      return;
+    }
+  
+    let scheduleId = selectedScheduleId;
+  
+    // 💡 schedule_id が null の場合、新規スケジュールを登録
+    if (!scheduleId) {
+      const [start, end] = bookingDetails.timeSlot.split('-');
+      const selectedDate = new Date(bookingDetails.date);
+  
+      const startTime = new Date(selectedDate);
+      const endTime = new Date(selectedDate);
+      const [startHour, startMinute] = start.split(':');
+      const [endHour, endMinute] = end.split(':');
+  
+      startTime.setHours(parseInt(startHour), parseInt(startMinute));
+      endTime.setHours(parseInt(endHour), parseInt(endMinute));
+  
+      // POST /schedules に新規登録
+      // ③ handleConfirm 内のスケジュール登録部分（修正後）
+      const newScheduleRes = await axios.post(`${BACKEND_URL}/schedules`, {
+        course_id: 1,
+        start_time: toJSTISOString(startTime),
+        end_time: toJSTISOString(endTime),
+        reservation_status: "booked",
+        partner_id: 101
+      });
+
+  
+      scheduleId = newScheduleRes.data.schedule_id;
+    }
+  
+    try {
+      await axios.post(`${BACKEND_URL}/reservations`, {
+        user_id: parseInt(user_id),
+        schedule_id: scheduleId,
+        consultation_style: bookingDetails.consultationType
+      });
+  
+      alert("予約が完了しました。");
+    } catch (error) {
+      console.error("予約エラー:", error);
+      alert("予約中にエラーが発生しました。");
+    }
+  };
+  
+  
+  
+
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -130,6 +272,7 @@ function App() {
         setIsAuthenticated(true);
         setIsAuthModalOpen(false);
         setCurrentStep(5);
+        localStorage.setItem("user_id", response.data.user_id);
       }
     } catch (error) {
       const msg =
@@ -214,14 +357,29 @@ function App() {
                 }
               />
               {bookingDetails.date && (
-                <TimeSlots
-                  slots={MOCK_TIME_SLOTS}
-                  selectedTime={bookingDetails.timeSlot}
-                  onTimeSelect={(time) =>
-                    setBookingDetails((prev) => ({ ...prev, timeSlot: time }))
-                  }
-                />
-              )}
+  <>
+    {console.log("🧪 slots に渡してる値:", timeSlotsWithAvailability)}
+    <TimeSlots
+  slots={timeSlotsWithAvailability}
+  selectedTime={bookingDetails.timeSlot}
+  onTimeSelect={(timeStr) => {
+    setSelectedTimeSlot(timeStr);
+    setBookingDetails((prev) => ({
+      ...prev,
+      timeSlot: timeStr,
+    }));
+
+    // 該当するスケジュールがある場合のみ schedule_id 設定
+    const matched = timeSlotsWithAvailability.find(s => s.time === timeStr);
+    setSelectedScheduleId(matched?.id ?? null);
+  }}
+/>
+
+  </>
+)}
+
+
+
             </div>
           )}
 
