@@ -118,7 +118,7 @@ function App() {
         </div>
       </header>
 
-      {/* // JSXでフォームを描画 */}
+      {/* // JSXでフォームを描画 
       <form onSubmit={handleLogin}>
       <input
         type="email"
@@ -134,7 +134,7 @@ function App() {
       />
       <button type="submit">ログイン</button>
     </form>
-
+*/}
 
 {isMenuOpen && (
   <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-start">

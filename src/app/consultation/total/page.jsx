@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // 4/13のな修正 useEffect追加
 import { StepBar } from '@/components/StepBar';
 import { Calendar } from '@/components/Calendar';
 import { TimeSlots } from '@/components/TimeSlots';
@@ -11,20 +11,21 @@ import axios from "axios";
 const STEPS = ['コース選択', '問診回答', '日時選択', 'ログイン/会員登録', '予約内容確認'];
 
 const MOCK_TIME_SLOTS = [
-  { time: '10:00-10:30', available: true },
-  { time: '10:30-11:00', available: false },
-  { time: '11:00-11:30', available: true },
-  { time: '11:30-12:00', available: true },
-  { time: '13:00-13:30', available: false },
-  { time: '13:30-14:00', available: true },
-  { time: '14:00-14:30', available: true },
-  { time: '14:30-15:00', available: false },
+  { id: 1, time: '10:00-10:30', available: true },
+  { id: 2, time: '10:30-11:00', available: false },
+  { id: 3, time: '11:00-11:30', available: true },
+  { id: 4, time: '11:30-12:00', available: true },
+  { id: 5, time: '13:00-13:30', available: false },
+  { id: 6, time: '13:30-14:00', available: true },
+  { id: 7, time: '14:00-14:30', available: true },
+  { id: 8, time: '14:30-15:00', available: false },
 ];
 
 function App() {
   const [currentStep, setCurrentStep] = useState(2);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [user, setUser] = useState(null); // 4/13のな修正 userステート追加
   const BACKEND_URL = process.env.NEXT_PUBLIC_API_ENDPOINT;
   const [registerForm, setRegisterForm] = useState({
       firstName: '',
@@ -51,74 +52,101 @@ function App() {
       notes: '',
     },
   });
+  const [loginForm, setLoginForm] = useState({
+    email: '',
+    password: ''
+  });
+  
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) setUser(JSON.parse(storedUser));
+  }, []); // 4/13のな修正 ローカルストレージからuser復元
 
   const validateUserInfo = () => {
     const newErrors = {};
-    
-    if (!bookingDetails.userInfo.lastName) {
-      newErrors.lastName = '姓を入力してください';
-    }
-    if (!bookingDetails.userInfo.firstName) {
-      newErrors.firstName = '名を入力してください';
-    }
-    if (!bookingDetails.userInfo.lastNameKana) {
-      newErrors.lastNameKana = 'セイを入力してください';
-    }
-    if (!bookingDetails.userInfo.firstNameKana) {
-      newErrors.firstNameKana = 'メイを入力してください';
-    }
-    if (!bookingDetails.userInfo.phone) {
-      newErrors.phone = '電話番号を入力してください';
-    }
-    if (!bookingDetails.userInfo.email) {
-      newErrors.email = 'メールアドレスを入力してください';
-    } else if (!/\S+@\S+\.\S+/.test(bookingDetails.userInfo.email)) {
-      newErrors.email = '有効なメールアドレスを入力してください';
-    }
-
+    if (!bookingDetails.userInfo.lastName) newErrors.lastName = '姓を入力してください';
+    if (!bookingDetails.userInfo.firstName) newErrors.firstName = '名を入力してください';
+    if (!bookingDetails.userInfo.lastNameKana) newErrors.lastNameKana = 'セイを入力してください';
+    if (!bookingDetails.userInfo.firstNameKana) newErrors.firstNameKana = 'メイを入力してください';
+    if (!bookingDetails.userInfo.phone) newErrors.phone = '電話番号を入力してください';
+    if (!bookingDetails.userInfo.email) newErrors.email = 'メールアドレスを入力してください';
+    else if (!/\S+@\S+\.\S+/.test(bookingDetails.userInfo.email)) newErrors.email = '有効なメールアドレスを入力してください';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleNext = () => {
-    if (currentStep === 4 && !validateUserInfo()) {
+    if (currentStep === 4 && !validateUserInfo()) return;
+    if (currentStep === 3 && isAuthenticated) {
+      setCurrentStep(5);
       return;
     }
-    
-    // Authentication flow check after date selection
-    if (currentStep === 3) {
-      if (isAuthenticated) {
-        setCurrentStep(5); // Skip to confirmation if authenticated
-        return;
-      }
-    }
-    
-    setCurrentStep((prev) => Math.min(prev + 1, STEPS.length));
+    setCurrentStep(prev => Math.min(prev + 1, STEPS.length));
   };
 
-  const handleBack = () => {
-    setCurrentStep((prev) => Math.max(prev - 1, 1));
-  };
+  const handleBack = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
-  const handleQuestionnaireSubmit = (questionnaireData) => {
-    setBookingDetails((prev) => ({
-      ...prev,
-      questionnaire: questionnaireData,
-    }));
+  const handleQuestionnaireSubmit = (data) => {
+    setBookingDetails(prev => ({ ...prev, questionnaire: data }));
     handleNext();
-  };
+  }; // ✅ 4/13のな修正 一時保存のみに修正
 
-  const handleConfirm = () => {
-    console.log('Booking confirmed:', bookingDetails);
-    alert('予約が完了しました。');
-  };
+  const getAgeGroup = (birthDateStr) => {
+    const birth = new Date(birthDateStr);
+    const age = new Date().getFullYear() - birth.getFullYear();
+    if (age < 30) return '20代以下';
+    if (age < 40) return '30代';
+    if (age < 50) return '40代';
+    return '50代以上';
+  }; // ✅ 4/13のな修正 年代計算
 
-  const handleLogin = (e) => {
+  const handleConfirm = async () => {
+    try {
+      console.log("送信データ確認", bookingDetails.timeSlot); //4/13 デバッグ追加
+      const res = await axios.post(`${BACKEND_URL}/reservations`, {
+        user_id: user.user_id,
+        schedule_id: bookingDetails.timeSlot.id, // 4/13のな修正 timeSlot は id を持つオブジェクト
+        consultation_style: bookingDetails.consultationType,
+      });
+      const reservationId = res.data.reservation_id;
+      const q = bookingDetails.questionnaire;
+      const ageGroup = getAgeGroup(registerForm.birthDate);
+      await axios.post(`${BACKEND_URL}/presurveys`, {
+        reservation_id: reservationId,
+        age_group: ageGroup,
+        item_preparation: false,
+        concern_parts: q.q1.join(','),
+        troubles: q.q2.join(','),
+        past_experience: [...(q.q3 || []), q.q3_other || ''].filter(Boolean).join(','),
+        consultation_goal: [...(q.q4 || []), q.q4_other || ''].filter(Boolean).join(','),
+        free_comment: '',
+      });
+      alert('予約が完了しました。');
+    } catch (err) {
+      console.error("送信エラー", err);
+      alert("送信に失敗しました");
+    }
+  }; // ✅ 4/13のな修正
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setIsAuthenticated(true);
-    setCurrentStep(5); // Proceed to confirmation step
+    try {
+      const response = await axios.post(`${BACKEND_URL}/login`, loginForm);
+      if (response.data) {
+        setIsAuthenticated(true);
+        localStorage.setItem("user", JSON.stringify(response.data)); // ✅ 4/13のな修正 user保存
+        setUser(response.data);
+        setIsAuthModalOpen(false);
+        setCurrentStep(5);
+      }
+    } catch (error) {
+      const msg = error.response?.data?.detail ?? error.message ?? "不明なエラーが発生しました";
+      alert(`ログインに失敗しました。\n${msg}`);
+    }
   };
+
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -219,12 +247,20 @@ function App() {
                     placeholder="メールアドレス"
                     className="w-full border px-3 py-2 rounded"
                     required
+                    value={loginForm.email}
+                    onChange={(e) =>
+                      setLoginForm({ ...loginForm, email: e.target.value })
+                    }
                   />
                   <input
                     type="password"
                     placeholder="パスワード"
                     className="w-full border px-3 py-2 rounded"
                     required
+                    value={loginForm.password}
+                    onChange={(e) =>
+                      setLoginForm({ ...loginForm, password: e.target.value })
+                    }
                   />
                   <button
                     type="submit"
@@ -360,7 +396,7 @@ function App() {
                 <div className="border-b pb-4">
                   <h3 className="font-medium">予約日時</h3>
                   <p>
-                    {bookingDetails.date?.toLocaleDateString('ja-JP')} {bookingDetails.timeSlot}
+                   {bookingDetails.date?.toLocaleDateString('ja-JP')} {bookingDetails.timeSlot?.time}
                   </p>
                 </div>
                 <div className="border-b pb-4">

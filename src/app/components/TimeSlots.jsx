@@ -9,10 +9,10 @@ export const TimeSlots = ({ slots, selectedTime, onTimeSelect }) => {
         {slots.map((slot) => (
           <button
             key={slot.time}
-            onClick={() => slot.available && onTimeSelect(slot.time)}
+            onClick={() => slot.available && onTimeSelect(slot)} // slotオブジェクト全体を渡す
             disabled={!slot.available}
             className={`p-4 text-center rounded-lg border ${
-              selectedTime === slot.time
+              selectedTime?.id === slot.id //  idベースで比較
                 ? 'border-gray-800 bg-gray-800 text-white'
                 : slot.available
                 ? 'border-gray-300 hover:border-gray-400'
