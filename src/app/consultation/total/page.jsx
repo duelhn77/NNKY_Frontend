@@ -204,13 +204,15 @@ function App() {
       alert("日付と時間を選択してください");
       return;
     }
+  
     const user_id = localStorage.getItem("user_id");
     if (!user_id) {
       alert("ユーザー情報が見つかりません。ログインし直してください。");
       return;
     }
+  
     let scheduleId = selectedScheduleId;
-    // :電球: schedule_id が null の場合、新規スケジュールを登録
+  
     if (!scheduleId) {
       const [start, end] = bookingDetails.timeSlot.split('-');
       const selectedDate = new Date(bookingDetails.date);
@@ -220,8 +222,7 @@ function App() {
       const [endHour, endMinute] = end.split(':');
       startTime.setHours(parseInt(startHour), parseInt(startMinute));
       endTime.setHours(parseInt(endHour), parseInt(endMinute));
-      // POST /schedules に新規登録
-      // ③ handleConfirm 内のスケジュール登録部分（修正後）
+      
       const newScheduleRes = await axios.post(`${BACKEND_URL}/schedules`, {
         course_id: 1,
         start_time: toJSTISOString(startTime),
@@ -231,61 +232,41 @@ function App() {
       });
       scheduleId = newScheduleRes.data.schedule_id;
     }
+  
     try {
-      await axios.post(`${BACKEND_URL}/reservations`, {
+      const reservationRes = await axios.post(`${BACKEND_URL}/reservations`, {
         user_id: parseInt(user_id),
         schedule_id: scheduleId,
         consultation_style: bookingDetails.consultationType
       });
-      alert("予約が完了しました。");
-    } catch (error) {
-      console.error("予約エラー:", error);
-      alert("予約中にエラーが発生しました。");
-    }const handleConfirm = async () => {
-    if (!bookingDetails.date || !bookingDetails.timeSlot) {
-      alert("日付と時間を選択してください");
-      return;
-    }
-    const user_id = localStorage.getItem("user_id");
-    if (!user_id) {
-      alert("ユーザー情報が見つかりません。ログインし直してください。");
-      return;
-    }
-    let scheduleId = selectedScheduleId;
-    // :電球: schedule_id が null の場合、新規スケジュールを登録
-    if (!scheduleId) {
-      const [start, end] = bookingDetails.timeSlot.split('-');
-      const selectedDate = new Date(bookingDetails.date);
-      const startTime = new Date(selectedDate);
-      const endTime = new Date(selectedDate);
-      const [startHour, startMinute] = start.split(':');
-      const [endHour, endMinute] = end.split(':');
-      startTime.setHours(parseInt(startHour), parseInt(startMinute));
-      endTime.setHours(parseInt(endHour), parseInt(endMinute));
-      // POST /schedules に新規登録
-      // ③ handleConfirm 内のスケジュール登録部分（修正後）
-      const newScheduleRes = await axios.post(`${BACKEND_URL}/schedules`, {
-        course_id: 1,
-        start_time: toJSTISOString(startTime),
-        end_time: toJSTISOString(endTime),
-        reservation_status: "booked",
-        partner_id: 101
+  
+      const reservationId = reservationRes.data.reservation_id;
+      const q = bookingDetails.questionnaire;
+      const answerText = [
+        `Q1: ${q.q1?.join(', ') ?? ''}`,
+        `Q2: ${q.q2?.join(', ') ?? ''}`,
+        `Q3: ${q.q3?.join(', ') ?? ''}${q.q3_other ? `, 補足: ${q.q3_other}` : ''}`,
+        `Q4: ${q.q4?.join(', ') ?? ''}${q.q4_other ? `, 補足: ${q.q4_other}` : ''}`
+      ].join('\n');
+  
+      await axios.post(`${BACKEND_URL}/presurveys`, {
+        reservation_id: reservationId,
+        age_group: getAgeGroup(registerForm.birthDate),
+        item_preparation: false,
+        concern_parts: '',
+        troubles: '',
+        past_experience: '',
+        consultation_goal: '',
+        free_comment: answerText,
       });
-      scheduleId = newScheduleRes.data.schedule_id;
-    }
-    try {
-      await axios.post(`${BACKEND_URL}/reservations`, {
-        user_id: parseInt(user_id),
-        schedule_id: scheduleId,
-        consultation_style: bookingDetails.consultationType
-      });
+  
       alert("予約が完了しました。");
     } catch (error) {
       console.error("予約エラー:", error);
       alert("予約中にエラーが発生しました。");
     }
   };
-  };
+  
   
   
   
