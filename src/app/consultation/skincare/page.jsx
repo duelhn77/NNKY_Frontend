@@ -29,6 +29,11 @@ function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const BACKEND_URL = process.env.NEXT_PUBLIC_API_ENDPOINT;
+  const [loginForm, setLoginForm] = useState({
+    email: '',
+    password: ''
+  });
+  
   const [registerForm, setRegisterForm] = useState({
     firstName: '',
     lastName: '',
@@ -114,11 +119,29 @@ function App() {
 
 
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setIsAuthenticated(true);
-    setCurrentStep(5); // Proceed to confirmation step
+    try {
+      const response = await axios.post(`${BACKEND_URL}/login`, {
+        email: loginForm.email,
+        password: loginForm.password
+      });
+  
+      if (response.data) {
+        setIsAuthenticated(true);
+        setIsAuthModalOpen(false);
+        setCurrentStep(5);
+      }
+    } catch (error) {
+      
+      const msg =
+        error.response?.data?.detail ??
+        error.message ??
+        "不明なエラーが発生しました";
+      alert(`ログインに失敗しました。\n${msg}`);
+    }
   };
+  
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -224,12 +247,20 @@ function App() {
                     placeholder="メールアドレス"
                     className="w-full border px-3 py-2 rounded"
                     required
+                    value={loginForm.email}
+                    onChange={(e) =>
+                      setLoginForm({ ...loginForm, email: e.target.value })
+                    }
                   />
                   <input
                     type="password"
                     placeholder="パスワード"
                     className="w-full border px-3 py-2 rounded"
                     required
+                    value={loginForm.password}
+                    onChange={(e) =>
+                      setLoginForm({ ...loginForm, password: e.target.value })
+                    }
                   />
                   <button
                     type="submit"

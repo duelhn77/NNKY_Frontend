@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Check } from 'lucide-react';
+import { Check, ArrowLeft, ArrowRight } from 'lucide-react';
 
 const SKIN_TYPES = ['乾燥', '脂性', '混合', '敏感', '普通'];
 const SKIN_CONCERNS = ['シミ', 'シワ', '毛穴', 'くすみ', 'ニキビ', 'たるみ', '赤み'];
@@ -180,8 +180,6 @@ export const QuestionnaireForm = ({ onSubmit, onBack }) => {
         />
       </div>
 
-
-
 <div className="pt-6 flex flex-col sm:flex-row gap-4 sm:justify-between">
   <button
     type="button"
@@ -201,3 +199,4 @@ export const QuestionnaireForm = ({ onSubmit, onBack }) => {
 </form>
 );
 };
+

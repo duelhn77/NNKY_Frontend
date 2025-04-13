@@ -4,9 +4,11 @@ import { StepBar } from '@/components/StepBar';
 import { Calendar } from '@/components/Calendar';
 import { TimeSlots } from '@/components/TimeSlots';
 import { UserForm } from '@/components/UserForm';
+
 import { QuestionnaireForm_eyebrows } from '@/components/QuestionnaireForm_eyebrows';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import axios from "axios";
+
 
 const STEPS = ['コース選択', '問診回答', '日時選択', 'ログイン/会員登録', '予約内容確認'];
 
@@ -21,23 +23,34 @@ const MOCK_TIME_SLOTS = [
   { time: '14:30-15:00', available: false },
 ];
 
+
+
+
+
 function App() {
   const [currentStep, setCurrentStep] = useState(2);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const BACKEND_URL = process.env.NEXT_PUBLIC_API_ENDPOINT;
+
+  const [loginForm, setLoginForm] = useState({
+    email: '',
+    password: ''
+  });
+  
   const [registerForm, setRegisterForm] = useState({
-      firstName: '',
-      lastName: '',
-      firstNameKana: '',
-      lastNameKana: '',
-      email: '',
-      phone: '',
-      password: '',
-      birthDate: '',
-    });
+    firstName: '',
+    lastName: '',
+    firstNameKana: '',
+    lastNameKana: '',
+    email: '',
+    phone: '',
+    password: '',
+    birthDate: '',
+  });
   const [bookingDetails, setBookingDetails] = useState({
-    consultationType: '眉毛＆ひげカウンセリング',
+    consultationType: '眉毛＆ひげ',
+
     questionnaire: null,
     date: null,
     timeSlot: null,
@@ -109,16 +122,33 @@ function App() {
     handleNext();
   };
 
-  const handleConfirm = () => {
-    console.log('Booking confirmed:', bookingDetails);
-    alert('予約が完了しました。');
-  };
 
-  const handleLogin = (e) => {
+
+
+  const handleLogin = async (e) => {
     e.preventDefault();
-    setIsAuthenticated(true);
-    setCurrentStep(5); // Proceed to confirmation step
+    try {
+      const response = await axios.post(`${BACKEND_URL}/login`, {
+        email: loginForm.email,
+        password: loginForm.password
+      });
+  
+      if (response.data) {
+        setIsAuthenticated(true);
+        setIsAuthModalOpen(false);
+        setCurrentStep(5);
+      }
+    } catch (error) {
+      
+      const msg =
+        error.response?.data?.detail ??
+        error.message ??
+        "不明なエラーが発生しました";
+      alert(`ログインに失敗しました。\n${msg}`);
+    }
   };
+  
+
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -141,6 +171,13 @@ function App() {
     }
   };
 
+  
+  const handleConfirm = () => {
+    console.log('Booking confirmed:', bookingDetails);
+    alert('予約が完了しました。');
+  };
+
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-3xl mx-auto px-4 py-8">
@@ -160,11 +197,13 @@ function App() {
                 こんなかたにおすすめ！
               </p>
               <ul className="list-disc list-inside text-gray-600 mb-8">
+
                 <li>ひげを生やしてみたいが、似合わないのではと自信がない</li>
                 <li>眉毛が伸びてきて手入れの方法を考えたい</li>
               </ul>
               <p className="text-sm text-gray-500">
                 ※予定時間：30分
+
               </p>
             </div>
           )}
@@ -177,10 +216,12 @@ function App() {
               <p className="text-gray-600 mb-8">
                 より良いカウンセリングのため、以下の質問にお答えください。
               </p>
+
               <QuestionnaireForm_eyebrows
                 onSubmit={handleQuestionnaireSubmit}
                 onBack={handleBack}
               />
+
 
             </div>
           )}
@@ -219,12 +260,24 @@ function App() {
                     placeholder="メールアドレス"
                     className="w-full border px-3 py-2 rounded"
                     required
+
+                    value={loginForm.email}
+                    onChange={(e) =>
+                      setLoginForm({ ...loginForm, email: e.target.value })
+                    }
+
                   />
                   <input
                     type="password"
                     placeholder="パスワード"
                     className="w-full border px-3 py-2 rounded"
                     required
+
+                    value={loginForm.password}
+                    onChange={(e) =>
+                      setLoginForm({ ...loginForm, password: e.target.value })
+                    }
+
                   />
                   <button
                     type="submit"
@@ -265,7 +318,9 @@ function App() {
                       placeholder="セイ（カタカナ）"
                       className="border px-2 py-1 rounded"
                       required
+
                       value={registerForm.lastNameKana}
+
                       onChange={(e) =>
                         setRegisterForm({ ...registerForm, lastNameKana: e.target.value })
                       }
@@ -275,7 +330,9 @@ function App() {
                       placeholder="メイ（カタカナ）"
                       className="border px-2 py-1 rounded"
                       required
+
                       value={registerForm.firstNameKana}
+
                       onChange={(e) =>
                         setRegisterForm({ ...registerForm, firstNameKana: e.target.value })
                       }
@@ -316,7 +373,9 @@ function App() {
                     placeholder="パスワード"
                     className="w-full border px-3 py-2 rounded"
                     required
+
                     value={registerForm.password}
+
                     onChange={(e) =>
                       setRegisterForm({ ...registerForm, password: e.target.value })
                     }
@@ -341,6 +400,7 @@ function App() {
                   <p>{bookingDetails.consultationType}</p>
                 </div>
                 {bookingDetails.questionnaire && (
+
                   <div className="border-b pb-4 space-y-2">
                     <h3 className="font-medium">アンケート回答</h3>
 
@@ -356,6 +416,7 @@ function App() {
                     )}
                   </div>
                 )}
+
 
                 <div className="border-b pb-4">
                   <h3 className="font-medium">予約日時</h3>
