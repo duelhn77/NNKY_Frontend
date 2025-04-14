@@ -41,7 +41,7 @@ const DEFAULT_TIME_SLOTS = [
 
 
 function App() {
-
+  const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(2);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null); // 4/13のな修正 userステート追加
