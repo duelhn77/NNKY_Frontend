@@ -114,10 +114,16 @@ function App() {
             {isAuthenticated ? (
               <Link
               href="/mypage"
-              className="text-blue-600 hover:text-blue-700 font-medium"
+              className="flex flex-col items-center text-xs text-gray-700 hover:text-blue-600 whitespace-nowrap"
             >
-              会員情報
+              <img
+                src="/mypage-icon.png"
+                alt="マイページ"
+                className="w-8 h-8 mb-1"
+              />
+              <span className="leading-tight">マイページ</span>
             </Link>
+            
             ) : (
               <button
               className="flex items-center gap-2 px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition whitespace-nowrap"
