@@ -43,10 +43,8 @@ function App() {
 
   const [currentStep, setCurrentStep] = useState(2);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [user, setUser] = useState(null); // 4/13のな修正 userステート追加
   const BACKEND_URL = process.env.NEXT_PUBLIC_API_ENDPOINT;
-  const [currentStep, setCurrentStep] = useState(2);
   const [bookedTimeSlots, setBookedTimeSlots] = useState([]);
   const [selectedScheduleId, setSelectedScheduleId] = useState(null);
   const [schedules, setSchedules] = useState([]);
@@ -124,7 +122,6 @@ function App() {
    
   
 
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState(null);
   const [registerForm, setRegisterForm] = useState({
@@ -190,33 +187,7 @@ function App() {
     return '50代以上';
   }; // ✅ 4/13のな修正 年代計算
 
-  const handleConfirm = async () => {
-    try {
-      console.log("送信データ確認", bookingDetails.timeSlot); //4/13 デバッグ追加
-      const res = await axios.post(`${BACKEND_URL}/reservations`, {
-        user_id: user.user_id,
-        schedule_id: bookingDetails.timeSlot.id, // 4/13のな修正 timeSlot は id を持つオブジェクト
-        consultation_style: bookingDetails.consultationType,
-      });
-      const reservationId = res.data.reservation_id;
-      const q = bookingDetails.questionnaire;
-      const ageGroup = getAgeGroup(registerForm.birthDate);
-      await axios.post(`${BACKEND_URL}/presurveys`, {
-        reservation_id: reservationId,
-        age_group: ageGroup,
-        item_preparation: false,
-        concern_parts: q.q1.join(','),
-        troubles: q.q2.join(','),
-        past_experience: [...(q.q3 || []), q.q3_other || ''].filter(Boolean).join(','),
-        consultation_goal: [...(q.q4 || []), q.q4_other || ''].filter(Boolean).join(','),
-        free_comment: '',
-      });
-      alert('予約が完了しました。');
-    } catch (err) {
-      console.error("送信エラー", err);
-      alert("送信に失敗しました");
-    }
-  }; // ✅ 4/13のな修正
+  
 
   // ① 関数の上部で定義（handleConfirmより上の位置）に追加
   const toJSTISOString = (date) => {
@@ -242,21 +213,16 @@ function App() {
   
     let scheduleId = selectedScheduleId;
   
-    // 💡 schedule_id が null の場合、新規スケジュールを登録
     if (!scheduleId) {
       const [start, end] = bookingDetails.timeSlot.split('-');
       const selectedDate = new Date(bookingDetails.date);
-  
       const startTime = new Date(selectedDate);
       const endTime = new Date(selectedDate);
       const [startHour, startMinute] = start.split(':');
       const [endHour, endMinute] = end.split(':');
-  
       startTime.setHours(parseInt(startHour), parseInt(startMinute));
       endTime.setHours(parseInt(endHour), parseInt(endMinute));
-  
-      // POST /schedules に新規登録
-      // ③ handleConfirm 内のスケジュール登録部分（修正後）
+      
       const newScheduleRes = await axios.post(`${BACKEND_URL}/schedules`, {
         course_id: 1,
         start_time: toJSTISOString(startTime),
@@ -264,16 +230,34 @@ function App() {
         reservation_status: "booked",
         partner_id: 101
       });
-
-  
       scheduleId = newScheduleRes.data.schedule_id;
     }
   
     try {
-      await axios.post(`${BACKEND_URL}/reservations`, {
+      const reservationRes = await axios.post(`${BACKEND_URL}/reservations`, {
         user_id: parseInt(user_id),
         schedule_id: scheduleId,
         consultation_style: bookingDetails.consultationType
+      });
+  
+      const reservationId = reservationRes.data.reservation_id;
+      const q = bookingDetails.questionnaire;
+      const answerText = [
+        `Q1: ${q.q1?.join(', ') ?? ''}`,
+        `Q2: ${q.q2?.join(', ') ?? ''}`,
+        `Q3: ${q.q3?.join(', ') ?? ''}${q.q3_other ? `, 補足: ${q.q3_other}` : ''}`,
+        `Q4: ${q.q4?.join(', ') ?? ''}${q.q4_other ? `, 補足: ${q.q4_other}` : ''}`
+      ].join('\n');
+  
+      await axios.post(`${BACKEND_URL}/presurveys`, {
+        reservation_id: reservationId,
+        age_group: getAgeGroup(registerForm.birthDate),
+        item_preparation: false,
+        concern_parts: '',
+        troubles: '',
+        past_experience: '',
+        consultation_goal: '',
+        free_comment: answerText,
       });
   
       alert("予約が完了しました。");
@@ -282,6 +266,7 @@ function App() {
       alert("予約中にエラーが発生しました。");
     }
   };
+  
   
   
   
