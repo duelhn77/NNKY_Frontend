@@ -80,7 +80,7 @@ function App() {
         birth_date: registerForm.birthDate, // yyyy-mm-dd 形式
       });
   
-      alert("会員登録に成功しました！");
+      alert("会員登録が完了しました！");
       setIsAuthenticated(true);
       setIsAuthModalOpen(false);
     } catch (error) {
@@ -296,7 +296,7 @@ function App() {
                       setRegisterForm({ ...registerForm, email: e.target.value })
                     }
                   />
-                  <input
+                  {/* <input
                     type="tel"
                     placeholder="電話番号"
                     className="w-full border px-3 py-2 rounded"
@@ -305,7 +305,7 @@ function App() {
                     onChange={(e) =>
                       setRegisterForm({ ...registerForm, phone: e.target.value })
                     }
-                  />
+                  /> */}
                   <input
                     type="date"
                     placeholder="生年月日"
