@@ -567,10 +567,10 @@ function App() {
                          <div className="border-b pb-4">
                            <h3 className="font-medium">予約日時</h3>
                            <p>
-                            {bookingDetails.date?.toLocaleDateString('ja-JP')} {bookingDetails.timeSlot?.time}
+                            {bookingDetails.date?.toLocaleDateString('ja-JP')} {bookingDetails.timeSlot}
                            </p>
                          </div>
-                         <div className="border-b pb-4">
+                         {/* <div className="border-b pb-4">
                            <h3 className="font-medium">お客様情報</h3>
                            <p>
                              {bookingDetails.userInfo.lastName} {bookingDetails.userInfo.firstName}
@@ -586,7 +586,7 @@ function App() {
                              <h3 className="font-medium">ご要望・ご相談内容</h3>
                              <p>{bookingDetails.userInfo.notes}</p>
                            </div>
-                         )}
+                         )} */}
                        </div>
                      </div>
                    )}
