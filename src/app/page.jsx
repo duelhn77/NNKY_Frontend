@@ -119,25 +119,6 @@ function App() {
       </header>
 
 
-      <form onSubmit={handleLogin}>
-      <input
-        type="email"
-        value={loginForm.email}
-        onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
-        required
-      />
-      <input
-        type="password"
-        value={loginForm.password}
-        onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
-        required
-      />
-      <button type="submit">ログイン</button>
-
-    </form>
-
-
-
 {isMenuOpen && (
   <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-start">
     <div className="bg-white w-64 h-full shadow-lg p-4">
