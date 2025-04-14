@@ -9,6 +9,7 @@ import { UserForm } from '@/components/UserForm';
 import { QuestionnaireForm_total } from '@/components/QuestionnaireForm_total';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import axios from "axios";
+import { PrimaryButton } from "@/components/PrimaryButton";
 
 const STEPS = ['コース選択', '問診回答', '日時選択', 'ログイン/会員登録', '予約内容確認'];
 
@@ -40,7 +41,7 @@ const DEFAULT_TIME_SLOTS = [
 
 
 function App() {
-
+  const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(2);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null); // 4/13のな修正 userステート追加
@@ -293,6 +294,8 @@ function App() {
         "不明なエラーが発生しました";
 
       alert(`ログインに失敗しました。\n${msg}`);
+    }finally {
+      setLoading(false); // ← 追加
     }
   };
 
@@ -315,6 +318,8 @@ function App() {
     } catch (error) {
       console.error("登録エラー:", error.response?.data || error);
       alert("会員登録に失敗しました。");
+    }finally {
+      setLoading(false); // ← 追加
     }
   };
 
@@ -426,12 +431,10 @@ function App() {
                       setLoginForm({ ...loginForm, password: e.target.value })
                     }
                   />
-                  <button
-                    type="submit"
-                    className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-                  >
-                    ログイン
-                  </button>
+                  <PrimaryButton type="submit" disabled={loading}>
+                   ログイン
+                  </PrimaryButton>
+
                 </form>
               </div>
 
@@ -521,12 +524,10 @@ function App() {
                       setRegisterForm({ ...registerForm, password: e.target.value })
                     }
                   />
-                  <button
-                    type="submit"
-                    className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700"
-                  >
-                    会員登録
-                  </button>
+                  <PrimaryButton type="submit" disabled={loading}>
+                   会員登録
+                  </PrimaryButton>
+
                 </form>
               </div>
             </div>
