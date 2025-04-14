@@ -476,7 +476,7 @@ function App() {
       {[
         {
           name: "べい",
-          img: "/counselor1.png",
+          img: "/Counselor1.png",
           genre: "スキンケア",
         },
         {
