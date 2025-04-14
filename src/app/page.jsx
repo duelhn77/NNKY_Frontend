@@ -84,7 +84,7 @@ function App() {
   
   
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col relative">
+    <div className="min-h-screen bg-[#E5EBF0] flex flex-col">
       <header className="bg-white shadow-sm sticky top-0 z-50">
         <div className="flex items-center justify-between h-16 px-4">
           <button
@@ -107,10 +107,10 @@ function App() {
               </button>
             ) : (
               <button
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
-                onClick={() => setIsAuthModalOpen(true)}
-              >
-                <LogIn className="w-5 h-5" />
+              className="flex items-center gap-2 px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition whitespace-nowrap"
+              onClick={() => setIsAuthModalOpen(true)}
+            >
+              <LogIn className="w-4 h-4" />
                 ログイン
               </button>
             )}
