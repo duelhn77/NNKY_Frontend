@@ -52,9 +52,12 @@ function App() {
         email: loginForm.email,
         password: loginForm.password
       });
-  
+      
+      localStorage.setItem("userId", response.data.user_id);
+
       setIsAuthenticated(true);
       alert('ログイン成功！');
+      setIsAuthModalOpen(false);
     } catch (error) {
       console.log("❌ エラー内容:", error);
       alert('ログインに失敗しました。');
@@ -109,9 +112,12 @@ function App() {
           </div>
           <div>
             {isAuthenticated ? (
-              <button className="text-blue-600 hover:text-blue-700 font-medium">
-                会員情報
-              </button>
+              <Link
+              href="/mypage"
+              className="text-blue-600 hover:text-blue-700 font-medium"
+            >
+              会員情報
+            </Link>
             ) : (
               <button
               className="flex items-center gap-2 px-3 py-1 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition whitespace-nowrap"
