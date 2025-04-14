@@ -15,8 +15,10 @@ import {
 import { AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import axios from 'axios';
+import { PrimaryButton } from "@/components/PrimaryButton";
 
 function App() {
+  const [loading, setLoading] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState("login");
@@ -41,7 +43,7 @@ function App() {
   // ログイン画面につきAPIと連携　（4/10 なりさん）
   const handleLogin = async (e) => {
     e.preventDefault(); // フォーム送信防止
-  
+    setLoading(true);
     // 🔍 パスワードが平文かチェック
     console.log("📩 入力されたパスワード:", loginForm.password);
   
@@ -56,12 +58,15 @@ function App() {
     } catch (error) {
       console.log("❌ エラー内容:", error);
       alert('ログインに失敗しました。');
+    }finally {
+      setLoading(false); // ← 追加
     }
   };
   
   //  ログイン画面につきAPIと連携　（4/10 なりさん）
   const handleRegister = async (e) => {
     e.preventDefault();
+    setLoading(true);
   
     try {
       const response = await axios.post("http://localhost:8000/register", {
@@ -78,6 +83,8 @@ function App() {
     } catch (error) {
       console.error("登録エラー:", error.response?.data || error);
       alert("会員登録に失敗しました。");
+    }finally {
+      setLoading(false); // ← 追加
     }
   };
   
@@ -208,12 +215,9 @@ function App() {
                     <p className="text-blue-600 inline cursor-pointer">パスワードをお忘れですか？</p>
                   </div>
                 </div>
-                <button
-                  type="submit"
-                  className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-                >
+                <PrimaryButton type="submit" disabled={loading}>
                   ログイン
-                </button>
+                </PrimaryButton>
               </form>
 
             ) : (
@@ -311,12 +315,9 @@ function App() {
                     }
                   />
                 </div>
-                <button
-                  type="submit"
-                  className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-                >
+                <PrimaryButton type="submit" disabled={loading}>
                   会員登録
-                </button>
+                </PrimaryButton>
               </form>
             )}
 

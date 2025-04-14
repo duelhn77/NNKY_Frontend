@@ -275,6 +275,8 @@ function App() {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
     try {
 
       const response = await axios.post(`${BACKEND_URL}/login`, {
@@ -303,6 +305,8 @@ function App() {
   const handleRegister = async (e) => {
     e.preventDefault();
   
+    setLoading(true);
+
     try {
       const response = await axios.post(`${BACKEND_URL}/register`, {
         name: registerForm.firstName + registerForm.lastName,
