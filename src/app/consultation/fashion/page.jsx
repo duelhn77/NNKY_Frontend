@@ -315,7 +315,7 @@ function App() {
       });
   
       alert("会員登録が完了しました。ログインしてください。");
-      setIsAuthenticated(true);
+      setIsAuthenticated(false);
       setIsAuthModalOpen(false);
       setRegisterForm({
         firstName: '',
@@ -520,16 +520,20 @@ function App() {
                                 setRegisterForm({ ...registerForm, phone: e.target.value })
                               }
                             /> */}
-                            <input
-                              type="date"
-                              placeholder="生年月日"
-                              className="w-full border px-3 py-2 rounded"
-                              required
-                              value={registerForm.birthDate}
-                              onChange={(e) =>
-                                setRegisterForm({ ...registerForm, birthDate: e.target.value })
-                              }
-                            />
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
+                      生年月日
+                    </label>
+                    <input
+                      type="date"
+                      className="flex-1 border px-3 py-2 rounded"
+                      required
+                      value={registerForm.birthDate}
+                      onChange={(e) =>
+                       setRegisterForm({ ...registerForm, birthDate: e.target.value })
+                      }
+                    />
+                  </div>
                             <input
                               type="password"
                               placeholder="パスワード"
