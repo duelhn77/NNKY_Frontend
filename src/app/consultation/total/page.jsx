@@ -10,6 +10,7 @@ import { QuestionnaireForm_total } from '@/components/QuestionnaireForm_total';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import axios from "axios";
 import { PrimaryButton } from "@/components/PrimaryButton";
+import Link from 'next/link';
 
 const STEPS = ['コース選択', '問診回答', '日時選択', 'ログイン/会員登録', '予約内容確認'];
 
@@ -604,7 +605,7 @@ function App() {
               </div>
             </div>
           )}
-
+          
           <div className="mt-8 flex justify-between">
             {currentStep > 1 && currentStep !== 2 && (
               <button
@@ -615,6 +616,8 @@ function App() {
                 戻る
               </button>
             )}
+              
+            
             {currentStep < STEPS.length && currentStep !== 2 && (
               <button
                 onClick={handleNext}
@@ -623,7 +626,9 @@ function App() {
                 次へ
                 <ArrowRight size={16} className="ml-2" />
               </button>
+              
             )}
+            
             {currentStep === STEPS.length && (
               <button
                 onClick={handleConfirm}
@@ -634,6 +639,17 @@ function App() {
               </button>
             )}
           </div>
+
+          {currentStep === STEPS.length && (
+           <div className="mt-4 text-center">
+            <Link
+             href="/"
+             className="text-sm text-blue-600 underline hover:text-blue-800"
+            >
+             トップページに戻る
+            </Link>
+          </div>
+          )}
         </div>
       </div>
     </div>
