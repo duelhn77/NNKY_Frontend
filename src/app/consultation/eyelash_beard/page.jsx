@@ -10,6 +10,7 @@ import { QuestionnaireForm_eyebrows } from '@/components/QuestionnaireForm_eyebr
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import axios from "axios";
 import { PrimaryButton } from "@/components/PrimaryButton";
+import Link from 'next/link';
 
 const STEPS = ['コース選択', '問診回答', '日時選択', 'ログイン/会員登録', '予約内容確認'];
 
@@ -635,6 +636,16 @@ function App() {
                        </button>
                      )}
                    </div>
+                   {currentStep === STEPS.length && (
+                   <div className="mt-4 text-center">
+                    <Link
+                      href="/"
+                      className="text-sm text-blue-600 underline hover:text-blue-800"
+                    >
+                    トップページに戻る
+                    </Link>
+                    </div>
+                   )}
                  </div>
                </div>
              </div>
